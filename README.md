@@ -6,7 +6,7 @@
 ## How To Use
 
 #### Details
-- 'Selector' can be a **node**, an **array of nodes**, a **NodeList** or a **jQuery object**.
+- 'Selector' can be a **string**, **node**, an **array of nodes**, a **NodeList** or a **jQuery object**.
 - The events callback and the **'getState'** methods return an array list of the **VisibilityState Object**.
 
 #### Vanilla JS

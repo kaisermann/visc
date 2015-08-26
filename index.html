@@ -53,7 +53,7 @@
 	<script src="dist/visc.js"></script>
 	<script>	
 
-		
+		/*
 		$('.small').visc(function(states) 
 		{
 			console.log("-----small-----");
@@ -62,7 +62,8 @@
 			console.log(states[1].visibilityRate);
 			console.log(states[1].occupiedViewport);
 			console.log(states[1].maxVisibility);
-		}).unvisc();
+		});
+*/
 /*
 		$('.block.big').visc(function(states) 
 		{
@@ -74,9 +75,8 @@
 		});
 		console.log($('.small').visc('getState'));
 		*/
-/*
 		var visc = new Visc();
-		visc.bind(document.querySelectorAll('.block'), function(states) 
+		visc.bind('.block', function(states) 
 		{			
 			for(var i = 0; i < states.length; i++)
 			{
@@ -90,15 +90,14 @@
 				item.element.style.opacity = item.visibilityRate.vertical;
 			}
 		});
-*/
 
-	var element = document.querySelectorAll(".biggest")[0];
-	var vsc = new Visc();
-	window.addEventListener("scroll", function()
-	{
-		console.log(Visc.isVisible(element));
-	});
+		var element = document.querySelectorAll(".biggest")[0];
+		var vsc = new Visc();
+		window.addEventListener("scroll", function()
+		{
+			console.log(Visc.isVisible(element));
+		});
 
-</script>
+	</script>
 </body>
 </html>
