@@ -171,13 +171,11 @@
  					_minWidth = Math.min(_frame.width, _win.width),
  					_minHeight = Math.min(_frame.height, _win.height);
 
- 					/*
  					state.frames = { 
  						window: _intersection,
  						viewport: _intersection.subtractFrom(_win),
  						element: _intersection.subtractFrom(_frame)
  					};
- 					*/
 
  					state.visibilityRate = {
  						both: _intersectionArea / _frame.getArea(),
@@ -225,7 +223,7 @@
  		this.occupiedViewport = {both:0,horizontal:0,vertical:0};
  		this.maxVisibility = {both:0,horizontal:0,vertical:0};
  		this.element = element;
- 		// this.frames = {window: new Frame(0,0,0,0), viewport: new Frame(0,0,0,0), element: new Frame(0,0,0,0)};
+ 		this.frames = {window: new Frame(0,0,0,0), viewport: new Frame(0,0,0,0), element: new Frame(0,0,0,0)};
  	}
  	/* -- Visibility State Class -- */
 

@@ -65,6 +65,13 @@ VisibilityState
 		horizontal: Percentage,
 		vertical: Percentage
 	},
+	// Frames relative to the element
+	frames = 
+	{
+		window: Rectangle,
+		element: Rectangle,
+		viewport: Rectangle
+	}
 	// Current Element
 	element: Node;
 }

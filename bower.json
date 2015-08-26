@@ -1,0 +1,20 @@
+{
+    "name": "ViSC",
+    "main": ["dist/visc.js"],
+    "version": "0.5.2",
+    "homepage": "https://github.com/chriskaisermann/ViSC",
+    "authors": [
+        "Christian Kaisermann <christian@kaisermann.it>"
+    ],
+    "description": "Elements visibility state on viewport",
+    "keywords": [
+        "visibility",
+        "opacity",
+        "visible"
+    ],
+    "license": "",
+    "ignore": [
+        "**/.*",
+        "index.html"
+    ]
+}

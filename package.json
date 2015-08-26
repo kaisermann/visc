@@ -1,0 +1,20 @@
+{
+    "name": "ViSC",
+    "version": "0.5.2",
+    "description": "Elements Visibility State Controller",
+    "main": "dist/visc.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/chriskaisermann/ViSC.git"
+    },
+    "keywords": [
+        "visibility",
+        "opacity",
+        "visible"
+    ],
+    "author": "Christian Kaisermann",
+    "license": "",
+    "bugs": {
+        "url": "https://github.com/chriskaisermann/ViSC/issues"
+    }
+}
