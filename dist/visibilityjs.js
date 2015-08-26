@@ -25,7 +25,7 @@
  		window.addEventListener("resize", updateWindowSize);
  		window.addEventListener("scroll", updateWindowSize);
  	},
- 	unbindWindowObserver =function () 
+ 	unbindWindowObserver = function () 
  	{
  		window.removeEventListener("resize", updateWindowSize);
  		window.removeEventListener("scroll", updateWindowSize);
