@@ -84,6 +84,10 @@ Visc.getState(selector);
 
 // Gets the number of event binded ViSC instances 
 Visc.getNumberOfInstances();
+
+// Check if an element is visible on the viewport (boolean)
+// Accepts a node or a jQuery / Zepto Object (gets the first element of the list)
+Visc.isVisible(element)
 ````
 
 ## Compatibility 

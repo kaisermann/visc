@@ -210,6 +210,16 @@
  	/* -- Public Static Methods -- */
  	Visc.getNumberOfInstances = function () { return _instanced; };
  	Visc.getState = function (elements) { return new Visc().getState(elements); }
+ 	Visc.isVisible = function(elements) 
+ 	{  
+ 		if((!!window.jQuery && elements instanceof jQuery) || Array.isArray(elements))
+ 			elements = elements[0];
+
+ 		if(!elements.nodeType)
+ 			return null;
+ 		
+ 		return new Visc().getState(elements)[0].visibilityRate.vertical>0;
+ 	}
  	/* -- Public Static Methods -- */
 
  	/* -- Visibility State Controller Class -- */

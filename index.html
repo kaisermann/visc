@@ -62,7 +62,7 @@
 			console.log(states[1].visibilityRate);
 			console.log(states[1].occupiedViewport);
 			console.log(states[1].maxVisibility);
-		})
+		}).unvisc();
 /*
 		$('.block.big').visc(function(states) 
 		{
@@ -91,21 +91,14 @@
 			}
 		});
 */
-/*
-	var element = document.querySelectorAll(".block");
+
+	var element = document.querySelectorAll(".biggest")[0];
 	var vsc = new Visc();
 	window.addEventListener("scroll", function()
 	{
-		var states = vsc.getState(element);
-		for(var i = 0; i < states.length; i++)
-		{
-			var item = states[i];
-			var visibility_vertical_delta = item.visibilityRate.vertical;
-			item.element.setAttribute("data-opacity", Math.round(visibility_vertical_delta * 100) + "%");
-			item.element.style.opacity = item.visibilityRate.vertical;
-		}
+		console.log(Visc.isVisible(element));
 	});
-*/
+
 </script>
 </body>
 </html>
