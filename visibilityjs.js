@@ -1,5 +1,5 @@
 /*!
- * ViSC - Visibility State Controller JS v0.3
+ * ViSC - Visibility State Controller JS v0.3.5.2
  * Elements Visibility State
  * by Christian Kaisermann
  */
@@ -16,6 +16,8 @@
  	var ViSC = function()
  	{
  		var self = this;
+ 		self._isActive = false;
+
  		function init()
  		{
  			self._clientTop = document.documentElement.clientTop;
