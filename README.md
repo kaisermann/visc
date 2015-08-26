@@ -28,7 +28,7 @@ visc.unbind();
 var states = Visc.getState(selector);
 ````
 
-#### jQuery / Zepto Methods
+#### jQuery / Zepto
 ````
 var selector = ".element";
 
