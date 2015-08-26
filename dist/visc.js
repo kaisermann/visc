@@ -195,9 +195,7 @@
  						horizontal: _intersection.width / _minWidth,
  						vertical: _intersection.height / _minHeight	
  					};
-
-
-
+ 					
  				}
  				states.push(state);
  			}
@@ -234,7 +232,7 @@
  		{
  			if(method==="getState")
  			{
- 				return Visc[method].call(this, this);
+ 				return Visc[method].call(this, _Slice(arguments,1));
  			}
  			else if (typeof method === 'function' || !method) 
  			{

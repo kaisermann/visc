@@ -53,16 +53,16 @@
 	<script src="dist/visc.js"></script>
 	<script>	
 
-		/*
+		
 		$('.small').visc(function(states) 
 		{
 			console.log("-----small-----");
+			console.log(this);
 			console.log(states[1].element);
 			console.log(states[1].visibilityRate);
 			console.log(states[1].occupiedViewport);
 			console.log(states[1].maxVisibility);
-		}).unvisc();
-*/
+		})
 /*
 		$('.block.big').visc(function(states) 
 		{
@@ -74,7 +74,7 @@
 		});
 		console.log($('.small').visc('getState'));
 		*/
-
+/*
 		var visc = new Visc();
 		visc.bind(document.querySelectorAll('.block'), function(states) 
 		{			
@@ -90,6 +90,7 @@
 				item.element.style.opacity = item.visibilityRate.vertical;
 			}
 		});
+*/
 /*
 	var element = document.querySelectorAll(".block");
 	var vsc = new Visc();
