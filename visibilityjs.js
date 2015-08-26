@@ -1,8 +1,11 @@
 /*!
- * Visibility Js v0.1
- * Elements visibility state
+ * Visibility Js v0.2
+ * Elements Visibility State
  * by Christian Kaisermann
  */
+
+ /* global jQuery */
+ /* global Zepto */
 
  window.visibility = function(element)
  {
@@ -15,17 +18,14 @@
  	_clientTop = document.documentElement.clientTop,
  	_clientLeft = document.documentElement.clientLeft;
 
- 	function p(s) { console.log(s); }
-
  	function Visibility()
  	{
  		setup();
 
+ 		var states = [];
+
  		if(!!window.jQuery  && element instanceof jQuery)
- 		{
  			elements = jQuery.makeArray(element);
- 			p(elements);
- 		}
  		else if(_eType==="NodeList")
  			elements = Array.prototype.slice.call(element, 0);
  		else if(Array.isArray(element))
@@ -35,44 +35,42 @@
  		else
  			return null;
 
- 		var states = [];
-
  		for(var i = 0; i < elements.length; i++)
  		{
- 			var _e = elements[i];
- 			var _frame = getOffsetRect(_e);
- 			var _intersection = _frame.intersectionWith(_win);
+ 			var _e = elements[i],
+ 			_frame = getOffsetRect(_e),
+ 			_intersection = _frame.intersectionWith(_win);
 
  			var state = new VisibilityState();
 
  			if(_intersection)
  			{
  				var 
- 				_intersectionArea = _intersection.area(),
+ 				_intersectionArea = _intersection.getArea(),
  				_minWidth = Math.min(_frame.width, _win.width),
  				_minHeight = Math.min(_frame.height, _win.height);
 
  				state.visibilityRate = {
-	 				both: _intersectionArea / _frame.area(),
+	 				both: _intersectionArea / _frame.getArea(),
 	 				horizontal: _intersection.width / _frame.width,
 	 				vertical: _intersection.height / _frame.height
- 				}
+ 				};
 
  				state.occupiedViewport = {
-	 				both: _intersectionArea / _win.area(),
+	 				both: _intersectionArea / _win.getArea(),
 	 				horizontal: _intersection.width / _win.width,
 	 				vertical: _intersection.height / _win.height
- 				}
+ 				};
 
  				state.maxVisibility =
  				{
 	 				both: _intersectionArea / (_minWidth * _minHeight),
 	 				horizontal: _intersection.width / _minWidth,
 	 				vertical: _intersection.height / _minHeight	
- 				}
+ 				};
 
  			}
- 			if(elements.length==1)
+ 			if(elements.length===1)
  				return state;
  			states.push(state);
  		}
@@ -116,7 +114,7 @@
 
  	/* -- Rectangle Class -- */
 
- 	Rectangle.prototype.area = function() { return this.width * this.height; };
+ 	Rectangle.prototype.getArea = function() { return this.width * this.height; };
  	Rectangle.prototype.intersectionWith = function(rect)
  	{
  		var 
@@ -130,7 +128,7 @@
  		height = bottom - top;
 
  		return (width >= 0 && height >= 0) ? new Rectangle(left, top, width, height) : null;
- 	}
+ 	};
  	/* -- Rectangle Class -- */
 
 
