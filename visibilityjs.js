@@ -1,28 +1,57 @@
 /*!
- * Visibility Js v0.2
+ * Visibility State Controller JS v0.2.1
  * Elements Visibility State
  * by Christian Kaisermann
  */
 
  /* global jQuery */
  /* global Zepto */
-
- window.visibility = function(element)
+ (function(window, undefined)
  {
  	'use strict';
 
- 	var
- 	_eType = element.constructor.name || null,
- 	elements = [],
- 	_win,
- 	_clientTop = document.documentElement.clientTop,
- 	_clientLeft = document.documentElement.clientLeft;
-
- 	function Visibility()
+ 	/* -- Visibility State Controller Class -- */
+ 	
+ 	var VSController = function()
  	{
- 		setup();
+ 		var self = this;
+ 		function init()
+ 		{
+ 			self._clientTop = document.documentElement.clientTop;
+ 			self._clientLeft = document.documentElement.clientLeft;
+ 			self._win = new Rectangle( getPosHorizontalScroll(), getPosVerticalScroll(), window.innerWidth, window.innerHeight);
 
- 		var states = [];
+ 			self.bindEvents();
+ 		}
+
+ 		self.bindEvents = function()
+ 		{
+ 			window.addEventListener("resize", resizeHandler);
+ 			window.addEventListener("scroll", scrollHandler);
+ 		}
+
+ 		self.unbindEvents = function() 
+ 		{
+ 			window.removeEventListener("resize", resizeHandler);
+ 			window.removeEventListener("scroll", scrollHandler);
+ 		}
+
+ 		function resizeHandler() { self._win.width = window.innerWidth; self._win.height = window.innerHeight; }
+ 		function scrollHandler() { self._win.left = getPosHorizontalScroll(); self._win.top = getPosVerticalScroll(); }
+
+ 		function getPosHorizontalScroll() { return window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft; }
+ 		function getPosVerticalScroll() { return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop; }
+
+ 		init();
+ 	};
+
+ 	VSController.prototype.getState = function(element)
+ 	{
+ 		var _eType = element.constructor.name || null;
+
+ 		var 
+ 		states = [],
+ 		elements = [];
 
  		if(!!window.jQuery  && element instanceof jQuery)
  			elements = jQuery.makeArray(element);
@@ -38,8 +67,8 @@
  		for(var i = 0; i < elements.length; i++)
  		{
  			var _e = elements[i],
- 			_frame = getOffsetRect(_e),
- 			_intersection = _frame.intersectionWith(_win);
+ 			_frame = this.getOffsetRect(_e),
+ 			_intersection = _frame.intersectionWith(this._win);
 
  			var state = new VisibilityState();
 
@@ -47,26 +76,26 @@
  			{
  				var 
  				_intersectionArea = _intersection.getArea(),
- 				_minWidth = Math.min(_frame.width, _win.width),
- 				_minHeight = Math.min(_frame.height, _win.height);
+ 				_minWidth = Math.min(_frame.width, this._win.width),
+ 				_minHeight = Math.min(_frame.height, this._win.height);
 
  				state.visibilityRate = {
-	 				both: _intersectionArea / _frame.getArea(),
-	 				horizontal: _intersection.width / _frame.width,
-	 				vertical: _intersection.height / _frame.height
+ 					both: _intersectionArea / _frame.getArea(),
+ 					horizontal: _intersection.width / _frame.width,
+ 					vertical: _intersection.height / _frame.height
  				};
 
  				state.occupiedViewport = {
-	 				both: _intersectionArea / _win.getArea(),
-	 				horizontal: _intersection.width / _win.width,
-	 				vertical: _intersection.height / _win.height
+ 					both: _intersectionArea / this._win.getArea(),
+ 					horizontal: _intersection.width / this._win.width,
+ 					vertical: _intersection.height / this._win.height
  				};
 
  				state.maxVisibility =
  				{
-	 				both: _intersectionArea / (_minWidth * _minHeight),
-	 				horizontal: _intersection.width / _minWidth,
-	 				vertical: _intersection.height / _minHeight	
+ 					both: _intersectionArea / (_minWidth * _minHeight),
+ 					horizontal: _intersection.width / _minWidth,
+ 					vertical: _intersection.height / _minHeight	
  				};
 
  			}
@@ -75,7 +104,22 @@
  			states.push(state);
  		}
  		return states;
- 	}
+ 	};
+
+ 	VSController.prototype.getOffsetRect = function(element) 
+ 	{
+ 		var box = element.getBoundingClientRect();
+ 		var top = box.top + this._win.top - this._clientTop;
+ 		var left = box.left + this._win.left - this._clientLeft;
+
+ 		return new Rectangle(left, top, box.width, box.height);
+ 	};
+
+ 	VSController.prototype.destroy = function() { this.unbindEvents(); }
+
+ 	/* -- Visibility State Controller Class -- */
+
+ 	/* -- Visibility State Class -- */
 
  	function VisibilityState ()
  	{
@@ -83,24 +127,9 @@
  		this.occupiedViewport = {both:0,horizontal:0,vertical:0};
  		this.maxVisibility = {both:0,horizontal:0,vertical:0};
  	}
+ 	/* -- Visibility State Class -- */
 
- 	function setup()
- 	{
- 		_win = new Rectangle(
- 			window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
- 			window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop,
- 			window.innerWidth,
- 			window.innerHeight);
- 	}
-
- 	function getOffsetRect(element) 
- 	{
- 		var box = element.getBoundingClientRect();
- 		var top = box.top + _win.top - _clientTop;
- 		var left = box.left + _win.left - _clientLeft;
-
- 		return new Rectangle(left, top, box.width, box.height);
- 	}
+ 	/* -- Rectangle Class -- */
 
  	function Rectangle(x, y, w, h)
  	{
@@ -111,8 +140,6 @@
  		this.right = this.left + this.width;
  		this.bottom = this.top + this.height;
  	}
-
- 	/* -- Rectangle Class -- */
 
  	Rectangle.prototype.getArea = function() { return this.width * this.height; };
  	Rectangle.prototype.intersectionWith = function(rect)
@@ -131,6 +158,5 @@
  	};
  	/* -- Rectangle Class -- */
 
-
- 	return new Visibility();
- };
+ 	window.VSController = VSController;
+ })(window);
