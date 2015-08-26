@@ -1,6 +1,6 @@
 {
     "name": "ViSC",
-    "version": "1.0",
+    "version": "1.0.1",
     "description": "Elements Visibility State Controller",
     "main": "dist/visc.js",
     "repository": {

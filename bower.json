@@ -1,7 +1,7 @@
 {
     "name": "ViSC",
     "main": ["dist/visc.js"],
-    "version": "1.0",
+    "version": "1.0.1",
     "homepage": "https://github.com/chriskaisermann/ViSC",
     "authors": [
         "Christian Kaisermann <christian@kaisermann.it>"
