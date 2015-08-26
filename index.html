@@ -16,16 +16,18 @@
 	
 	<script src="visibilityjs.js"></script>
 	<script>
-		var VSC = new VSController();
-		VSC.destroy();
+		var visc = new ViSC();
+		visc.sleep();
 		window.addEventListener("load", function()
 		{
-			var element = document.querySelectorAll(".block");
+			var element = document.querySelectorAll(".block")[2];
 
 			window.addEventListener("scroll", function()
 			{
-				var vstate = VSC.getState(element);
-				console.log(vstate);
+				var vstate = visc.getState(element);
+				console.log(vstate.visibilityRate);
+				console.log(vstate.occupiedViewport);
+				console.log(vstate.maxVisibility);
 			});
 		});
 	</script>

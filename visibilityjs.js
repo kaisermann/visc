@@ -1,43 +1,47 @@
 /*!
- * Visibility State Controller JS v0.2.1
+ * ViSC - Visibility State Controller JS v0.3
  * Elements Visibility State
  * by Christian Kaisermann
  */
 
  /* global jQuery */
  /* global Zepto */
+
  (function(window, undefined)
  {
  	'use strict';
 
  	/* -- Visibility State Controller Class -- */
- 	
- 	var VSController = function()
+
+ 	var ViSC = function()
  	{
  		var self = this;
  		function init()
  		{
  			self._clientTop = document.documentElement.clientTop;
  			self._clientLeft = document.documentElement.clientLeft;
- 			self._win = new Rectangle( getPosHorizontalScroll(), getPosVerticalScroll(), window.innerWidth, window.innerHeight);
-
+ 			
  			self.bindEvents();
  		}
 
  		self.bindEvents = function()
  		{
- 			window.addEventListener("resize", resizeHandler);
- 			window.addEventListener("scroll", scrollHandler);
+ 			self._isActive = true;
+ 			window.addEventListener("resize", windowTransformationHandler);
+ 			window.addEventListener("scroll", windowTransformationHandler);
  		}
 
  		self.unbindEvents = function() 
  		{
- 			window.removeEventListener("resize", resizeHandler);
- 			window.removeEventListener("scroll", scrollHandler);
+ 			self._isActive = false;
+ 			window.removeEventListener("resize", windowTransformationHandler);
+ 			window.removeEventListener("scroll", windowTransformationHandler);
  		}
 
- 		function resizeHandler() { self._win.width = window.innerWidth; self._win.height = window.innerHeight; }
- 		function scrollHandler() { self._win.left = getPosHorizontalScroll(); self._win.top = getPosVerticalScroll(); }
+ 		function windowTransformationHandler()
+ 		{
+ 			self._win = new Rectangle( getPosHorizontalScroll(), getPosVerticalScroll(), window.innerWidth, window.innerHeight);
+ 		}
 
  		function getPosHorizontalScroll() { return window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft; }
  		function getPosVerticalScroll() { return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop; }
@@ -45,8 +49,11 @@
  		init();
  	};
 
- 	VSController.prototype.getState = function(element)
+ 	ViSC.prototype.getState = function(element)
  	{
+ 		if(!this._isActive || element === undefined)
+ 			return null;
+
  		var _eType = element.constructor.name || null;
 
  		var 
@@ -106,7 +113,7 @@
  		return states;
  	};
 
- 	VSController.prototype.getOffsetRect = function(element) 
+ 	ViSC.prototype.getOffsetRect = function(element) 
  	{
  		var box = element.getBoundingClientRect();
  		var top = box.top + this._win.top - this._clientTop;
@@ -115,7 +122,8 @@
  		return new Rectangle(left, top, box.width, box.height);
  	};
 
- 	VSController.prototype.destroy = function() { this.unbindEvents(); }
+ 	ViSC.prototype.sleep = function() { this.unbindEvents(); }
+ 	ViSC.prototype.wake = function() { this.bindEvents(); }
 
  	/* -- Visibility State Controller Class -- */
 
@@ -158,5 +166,5 @@
  	};
  	/* -- Rectangle Class -- */
 
- 	window.VSController = VSController;
+ 	window.ViSC = ViSC;
  })(window);
