@@ -82,16 +82,15 @@
 			{
 				var item = states[i];
 				var visibility_vertical_delta = item.visibilityRate.vertical;
-				var color_delta = item.visibilityRate.horizontal;
+				var color_delta = item.frames.element.left*0.01;
 				var color = Math.round(100 * (1 + color_delta));
+
 				item.element.style.backgroundColor = "rgb("+color+","+color+",200)";
 				item.element.setAttribute("data-opacity", Math.round(visibility_vertical_delta * 100) + "%");
 				item.element.style.opacity = item.visibilityRate.vertical;
 			}
 		});
 /*
-window.addEventListener("load", function()
-{
 	var element = document.querySelectorAll(".block");
 	var vsc = new Visc();
 	window.addEventListener("scroll", function()
@@ -105,7 +104,6 @@ window.addEventListener("load", function()
 			item.element.style.opacity = item.visibilityRate.vertical;
 		}
 	});
-});
 */
 </script>
 </body>
