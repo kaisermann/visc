@@ -10,25 +10,67 @@
 </head>
 <body>
 	
-	<div class="block"></div>
-	<div class="block"></div>
+	<div class="block small"></div>
+	<div class="block small"></div>
 	<div class="block big"></div>
 	
+	<script src="jquery.js?ver=1.11.1"></script>
 	<script src="visibilityjs.js"></script>
-	<script>
-		var visc = new ViSC();
+	<script>	
+	
+		/*
+		$('.small').visc(function(states) 
+		{
+			console.log("-----small-----");
+			console.log(states[1].element);
+			console.log(states[1].visibilityRate);
+			console.log(states[1].occupiedViewport);
+			console.log(states[1].maxVisibility);
+		}).unvisc();
+		*/
+/*
+		$('.block.big').visc(function(states) 
+		{
+			console.log("-----big-----");
+			console.log(states[0].element);
+			console.log(states[0].visibilityRate);
+			console.log(states[0].occupiedViewport);
+			console.log(states[0].maxVisibility);
+		});
+		console.log($('.small').visc('getState'));
+		*/
+		
+		var visc = new Visc();
+		visc.bind(document.querySelectorAll('.small'), function(states) 
+		{
+			for(var i = 0; i < states.length; i++)
+			{
+				states[i].element.style.opacity = states[i].visibilityRate.both;
+			}
+		});
+
+		var visc2 = new Visc();
+		visc2.bind(document.querySelectorAll('.big'), function(states) 
+		{
+			for(var i = 0; i < states.length; i++)
+				states[i].element.style.opacity = states[i].visibilityRate.vertical;
+		});
+
+		/*
 		window.addEventListener("load", function()
 		{
-			var element = document.querySelectorAll(".block")[2];
-
+			var element = document.querySelectorAll(".block");
+			var vsc = new Visc();
 			window.addEventListener("scroll", function()
 			{
-				var vstate = visc.getState(element);
-				console.log(vstate.visibilityRate);
-				console.log(vstate.occupiedViewport);
-				console.log(vstate.maxVisibility);
+				var vstate = vsc.getState(element);
+				console.log(visc.getNumberOfInstances());
+				console.log(vstate[0].visibilityRate);
+				console.log(vstate[0].occupiedViewport);
+				console.log(vstate[0].maxVisibility);
 			});
 		});
+*/
 	</script>
 </body>
 </html>
