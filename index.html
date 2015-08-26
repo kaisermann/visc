@@ -2,10 +2,38 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>Demo - ViSC - Visibility State Controller</title>
 	<style>
-		.block { width: 100px; height: 100px; margin: 1000px; background-color: red; }
-		.big { width:1000px; }
+		body
+		{
+			font-family: Arial, sans-serif;
+		}
+
+		.block 
+		{ 
+			margin-left: auto; 
+			margin-right: auto; 
+			width: 300px; height: 300px; 
+			margin-top: 100px;
+			margin-bottom: 100px;
+			background-color: #606060; 
+			position: relative;
+			border: 1px solid #000;
+		}
+		.block::before,
+		.block::after
+		{
+			content: attr(data-opacity);
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-color: whitesmoke;
+			color: #404040;
+			padding: 5px 8px;
+		}
+		.block::after { top: auto; left:auto; right:0; bottom: 0; }
+		.big { width:1000px; background: #404040; }
+		.biggest { width: 2000px; background: #202020; }
 	</style>
 </head>
 <body>
@@ -13,11 +41,18 @@
 	<div class="block small"></div>
 	<div class="block small"></div>
 	<div class="block big"></div>
+	<div class="block biggest"></div>
+	<div class="block small"></div>
+	<div class="block small"></div>
+	<div class="block small"></div>
+	<div class="block small"></div>
+	<div class="block biggest"></div>
+	<div class="block big"></div>
 	
-	<script src="libs/jquery.js?ver=1.11.1"></script>
-	<script src="dist/visibilityjs.js"></script>
+	<script src="libs/jquery.js"></script>
+	<script src="dist/visc.js"></script>
 	<script>	
-	
+
 		/*
 		$('.small').visc(function(states) 
 		{
@@ -27,7 +62,7 @@
 			console.log(states[1].occupiedViewport);
 			console.log(states[1].maxVisibility);
 		}).unvisc();
-		*/
+*/
 /*
 		$('.block.big').visc(function(states) 
 		{
@@ -39,38 +74,39 @@
 		});
 		console.log($('.small').visc('getState'));
 		*/
-		
+
 		var visc = new Visc();
-		visc.bind(document.querySelectorAll('.small'), function(states) 
-		{
+		visc.bind(document.querySelectorAll('.block'), function(states) 
+		{			
 			for(var i = 0; i < states.length; i++)
 			{
-				states[i].element.style.opacity = states[i].visibilityRate.both;
+				var item = states[i];
+				var visibility_vertical_delta = item.visibilityRate.vertical;
+				var color_delta = item.visibilityRate.horizontal;
+				var color = Math.round(100 * (1 + color_delta));
+				item.element.style.backgroundColor = "rgb("+color+","+color+",200)";
+				item.element.setAttribute("data-opacity", Math.round(visibility_vertical_delta * 100) + "%");
+				item.element.style.opacity = item.visibilityRate.vertical;
 			}
 		});
-
-		var visc2 = new Visc();
-		visc2.bind(document.querySelectorAll('.big'), function(states) 
+/*
+window.addEventListener("load", function()
+{
+	var element = document.querySelectorAll(".block");
+	var vsc = new Visc();
+	window.addEventListener("scroll", function()
+	{
+		var states = vsc.getState(element);
+		for(var i = 0; i < states.length; i++)
 		{
-			for(var i = 0; i < states.length; i++)
-				states[i].element.style.opacity = states[i].visibilityRate.vertical;
-		});
-
-		/*
-		window.addEventListener("load", function()
-		{
-			var element = document.querySelectorAll(".block");
-			var vsc = new Visc();
-			window.addEventListener("scroll", function()
-			{
-				var vstate = vsc.getState(element);
-				console.log(visc.getNumberOfInstances());
-				console.log(vstate[0].visibilityRate);
-				console.log(vstate[0].occupiedViewport);
-				console.log(vstate[0].maxVisibility);
-			});
-		});
+			var item = states[i];
+			var visibility_vertical_delta = item.visibilityRate.vertical;
+			item.element.setAttribute("data-opacity", Math.round(visibility_vertical_delta * 100) + "%");
+			item.element.style.opacity = item.visibilityRate.vertical;
+		}
+	});
+});
 */
-	</script>
+</script>
 </body>
 </html>

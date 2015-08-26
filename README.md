@@ -75,7 +75,7 @@ VisibilityState
 // binding scroll and resize events. 
 Visc.getState(selector);
 
-// Gets the number of ViSC instances 
+// Gets the number of event binded ViSC instances 
 Visc.getNumberOfInstances();
 ````
 

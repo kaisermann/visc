@@ -1,5 +1,5 @@
 /*!
- * ViSC - Visibility State Controller JS v0.5
+ * ViSC - Visibility State Controller JS v0.6
  * Elements Visibility State Controller
  * https://github.com/chriskaisermann/ViSC
  * by Christian Kaisermann
@@ -33,15 +33,15 @@
  	updateWindowSize = function()
  	{
  		_client = { top: document.documentElement.clientTop, left: document.documentElement.clientLeft };
- 		_win = new Rectangle(
+ 		_win = new Frame(
  			window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
  			window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop, 
  			window.innerWidth, window.innerHeight);
  	};
  	/* -- Private Window Methods -- */
 
- 	/* -- Rectangle Class -- */
- 	function Rectangle(x, y, w, h)
+ 	/* -- Frame Class -- */
+ 	function Frame(x, y, w, h)
  	{
  		this.left = Math.round(x);
  		this.top = Math.round(y);
@@ -50,23 +50,26 @@
  		this.right = this.left + this.width;
  		this.bottom = this.top + this.height;
  	}
-
- 	Rectangle.prototype.getArea = function() { return this.width * this.height; };
- 	Rectangle.prototype.intersectionWith = function(rect)
+ 	Frame.prototype.getArea = function() { return this.width * this.height; };
+    Frame.prototype.subtractFrom = function (r) 
+    {
+        return new Frame(this.left - r.left, this.top - r.top, this.width, this.height);
+    },
+ 	Frame.prototype.intersectionWith = function(r)
  	{
  		var 
- 		top = Math.max(this.top, rect.top),
- 		left = Math.max(this.left, rect.left),
- 		right = Math.min(this.right, rect.right),
- 		bottom = Math.min(this.bottom, rect.bottom);
+ 		top = Math.max(this.top, r.top),
+ 		left = Math.max(this.left, r.left),
+ 		right = Math.min(this.right, r.right),
+ 		bottom = Math.min(this.bottom, r.bottom);
 
  		var
  		width = right - left,
  		height = bottom - top;
 
- 		return (width >= 0 && height >= 0)?new Rectangle(left, top, width, height):null;
+ 		return (width >= 0 && height >= 0)?new Frame(left, top, width, height):null;
  	};
- 	/* -- Rectangle Class -- */
+ 	/* -- Frame Class -- */
 
  	/* -- Visibility State Controller Class -- */
 
@@ -85,7 +88,7 @@
  			var top = box.top + _win.top - _client.top;
  			var left = box.left + _win.left - _client.left;
 
- 			return new Rectangle(left, top, box.width, box.height);
+ 			return new Frame(left, top, box.width, box.height);
  		},
  		getElements = function(elements)
  		{
@@ -168,6 +171,14 @@
  					_minWidth = Math.min(_frame.width, _win.width),
  					_minHeight = Math.min(_frame.height, _win.height);
 
+ 					/*
+ 					state.frames = { 
+ 						window: _intersection,
+ 						viewport: _intersection.subtractFrom(_win),
+ 						element: _intersection.subtractFrom(_frame)
+ 					};
+ 					*/
+
  					state.visibilityRate = {
  						both: _intersectionArea / _frame.getArea(),
  						horizontal: _intersection.width / _frame.width,
@@ -187,6 +198,8 @@
  						vertical: _intersection.height / _minHeight	
  					};
 
+
+
  				}
  				states.push(state);
  			}
@@ -202,6 +215,7 @@
  	Visc.getNumberOfInstances = function () { return _instanced; };
  	Visc.getState = function (elements) { return new Visc().getState(elements); }
  	/* -- Public Static Methods -- */
+
  	/* -- Visibility State Controller Class -- */
 
  	/* -- Visibility State Class -- */
@@ -211,6 +225,7 @@
  		this.occupiedViewport = {both:0,horizontal:0,vertical:0};
  		this.maxVisibility = {both:0,horizontal:0,vertical:0};
  		this.element = element;
+ 		// this.frames = {window: new Frame(0,0,0,0), viewport: new Frame(0,0,0,0), element: new Frame(0,0,0,0)};
  	}
  	/* -- Visibility State Class -- */
 
