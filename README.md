@@ -81,4 +81,4 @@ Visc.getNumberOfInstances();
 
 ## Compatibility 
 - IE 9+
-- Vanilla JS & jQuery & Zepto Compatible
+- jQuery & Zepto Compatible
