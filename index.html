@@ -85,6 +85,8 @@
 				var color_delta = item.frames.element.left*0.01;
 				var color = Math.round(100 * (1 + color_delta));
 
+				console.log(item.visibilityRate);
+
 				item.element.style.backgroundColor = "rgb("+color+","+color+",200)";
 				item.element.setAttribute("data-opacity", Math.round(visibility_vertical_delta * 100) + "%");
 				item.element.style.opacity = item.visibilityRate.vertical;

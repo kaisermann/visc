@@ -87,7 +87,8 @@ Visc.getNumberOfInstances();
 
 // Check if an element is visible on the viewport (boolean)
 // Accepts a node or a jQuery / Zepto Object (gets the first element of the list)
-Visc.isVisible(element)
+// minValue: how much of the element must be visible to return true (0 to 1)
+Visc.isVisible(element, minValue)
 ````
 
 ## Compatibility 

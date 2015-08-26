@@ -210,15 +210,16 @@
  	/* -- Public Static Methods -- */
  	Visc.getNumberOfInstances = function () { return _instanced; };
  	Visc.getState = function (elements) { return new Visc().getState(elements); }
- 	Visc.isVisible = function(elements) 
+ 	Visc.isVisible = function(elements, min) 
  	{  
+ 		min = min || 0;
  		if((!!window.jQuery && elements instanceof jQuery) || Array.isArray(elements))
  			elements = elements[0];
 
  		if(!elements.nodeType)
  			return null;
  		
- 		return new Visc().getState(elements)[0].visibilityRate.vertical>0;
+ 		return new Visc().getState(elements)[0].visibilityRate.both > min;
  	}
  	/* -- Public Static Methods -- */
 
