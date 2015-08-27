@@ -6,7 +6,6 @@ var $ = require('gulp-load-plugins')();
 var name = "visc";
 
 // Tasks
-
 gulp.task('lint', function() 
 {
 	return gulp.src(['src/*.js'])

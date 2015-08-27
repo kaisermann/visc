@@ -240,7 +240,7 @@
  		{
  			if(method==="getState")
  			{
- 				return Visc[method].call(this, _Slice(arguments,1));
+ 				return Visc.getState(this);
  			}
  			else if (typeof method === 'function' || !method) 
  			{
