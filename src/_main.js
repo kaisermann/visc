@@ -216,7 +216,7 @@
  		if(!elements.nodeType)
  			return null;
  		
- 		return new Visc().getState(elements)[0].visibilityRate.both > min;
+ 		return new Visc().getState(elements)[0].visibilityRate.both >= min;
  	};
  	/* -- Public Static Methods -- */
 
