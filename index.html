@@ -41,10 +41,6 @@
 	<div class="block small"></div>
 	<div class="block big"></div>
 	<div class="block biggest"></div>
-	<div class="block small"></div>
-	<div class="block small"></div>
-	<div class="block small"></div>
-	<div class="block small"></div>
 	<div class="block biggest"></div>
 	<div class="block big"></div>
 	
@@ -74,6 +70,7 @@
 		});
 		console.log($('.small').visc('getState'));
 		*/
+		/*
 		var visc = new Visc();
 		visc.bind('.block', function(states) 
 		{			
@@ -91,11 +88,11 @@
 				item.element.style.opacity = item.visibilityRate.vertical;
 			}
 		});
-
+*/
 		var element = document.querySelectorAll(".biggest")[0];
 		window.addEventListener("scroll", function()
 		{
-			console.log(Visc.isOnScreen($(".biggest")));
+			console.log("UEUEUEUE: "+ Visc.isVisible($(".biggest")));
 		});
 
 

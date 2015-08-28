@@ -18,7 +18,7 @@
  	/* Private Window Methods */
  	var 
  	bindWindowObserver = function() 
- 	{ 
+ 	{  
  		window.addEventListener("resize", updateWindowSize);
  		window.addEventListener("scroll", updateWindowSize);
  	},
@@ -35,15 +35,6 @@
  			window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop, 
  			window.innerWidth, window.innerHeight);
  	},
- 	getFirstElement = function(nodeOrList)
- 	{
- 		if((!!window.jQuery && nodeOrList instanceof jQuery) || Array.isArray(nodeOrList))
- 			nodeOrList = nodeOrList[0];
-
- 		if(!nodeOrList.nodeType)
- 			return null;
- 		return nodeOrList;
- 	},
  	getOffsetRect = function(element) 
  	{
  		var box = element.getBoundingClientRect();
@@ -51,7 +42,19 @@
  		var left = box.left + _win.left - _client.left;
 
  		return new Frame(left, top, box.width, box.height);
- 	};
+ 	},
+ 	booleanIterator = function(nodeOrCollection, callback)
+ 	{
+ 		if(isCollection(nodeOrCollection))
+ 		{
+ 			var returnValue = true;
+ 			for(var i = 0, len = nodeOrCollection.length; i < len; i++)
+ 				returnValue &= callback(nodeOrCollection[i]);
+ 			return !!returnValue;
+ 		}
+ 		return callback(nodeOrCollection);
+ 	},
+ 	isCollection = function(o) { return o.length!==undefined; };
  	/* -- Private Window Methods -- */
 
  	/* -- Frame Class -- */
@@ -207,7 +210,7 @@
  						horizontal: _intersection.width / _minWidth,
  						vertical: _intersection.height / _minHeight	
  					};
- 					
+
  				}
  				state.onScreen = _self.isOnScreen(_frame);
  				states.push(state);
@@ -223,8 +226,22 @@
  	/* -- Public Static Methods -- */
  	Visc.getNumberOfInstances = function () { return _instanced; };
  	Visc.getState = function (elements) { return new Visc().getState(elements); };
- 	Visc.isVisible = function (element, min) {   min = min || 0; return new Visc().getState(getFirstElement(element))[0].visibilityRate.both >= min; };
- 	Visc.isOnScreen = function (element) { return new Visc().isOnScreen(getOffsetRect(getFirstElement(element))); };
+ 	Visc.isVisible = function (nodeOrCollection, min) 
+ 	{ 
+ 		min = min || 0.000; 
+ 		return booleanIterator(Visc.getState(nodeOrCollection), function(state)
+ 		{
+ 			var rate = state.visibilityRate.both;
+ 			return rate > 0 && rate >= min;
+ 		});
+ 	};
+ 	Visc.isOnScreen = function (nodeOrCollection) 
+ 	{ 
+ 		return booleanIterator(nodeOrCollection, function(element)
+ 		{
+ 			return new Visc().isOnScreen(getOffsetRect(element));
+ 		});
+ 	};
  	/* -- Public Static Methods -- */
 
  	/* -- Visibility State Controller Class -- */
