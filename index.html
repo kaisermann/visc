@@ -18,7 +18,6 @@
 			margin-bottom: 100px;
 			background-color: #606060; 
 			position: relative;
-			border: 1px solid #000;
 		}
 		.block::before,
 		.block::after
@@ -85,20 +84,20 @@
 				var color_delta = item.frames.element.left*0.01;
 				var color = Math.round(100 * (1 + color_delta));
 
-				console.log(item.visibilityRate);
+				console.log(item);
 
 				item.element.style.backgroundColor = "rgb("+color+","+color+",200)";
 				item.element.setAttribute("data-opacity", Math.round(visibility_vertical_delta * 100) + "%");
 				item.element.style.opacity = item.visibilityRate.vertical;
 			}
 		});
-/*
+
 		var element = document.querySelectorAll(".biggest")[0];
 		window.addEventListener("scroll", function()
 		{
-			console.log($(".biggest").visc('getState'));
+			console.log(Visc.isOnScreen($(".biggest")));
 		});
-*/
+
 
 	</script>
 </body>

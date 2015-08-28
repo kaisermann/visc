@@ -1,5 +1,5 @@
 /*
- * ViSC - Visibility State Controller JS v1.1
+ * ViSC - Visibility State Controller JS v1.2
  * Elements Visibility State Controller
  * https://github.com/chriskaisermann/ViSC
  * by Christian Kaisermann
@@ -34,6 +34,23 @@
  			window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
  			window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop, 
  			window.innerWidth, window.innerHeight);
+ 	},
+ 	getFirstElement = function(nodeOrList)
+ 	{
+ 		if((!!window.jQuery && nodeOrList instanceof jQuery) || Array.isArray(nodeOrList))
+ 			nodeOrList = nodeOrList[0];
+
+ 		if(!nodeOrList.nodeType)
+ 			return null;
+ 		return nodeOrList;
+ 	},
+ 	getOffsetRect = function(element) 
+ 	{
+ 		var box = element.getBoundingClientRect();
+ 		var top = box.top + _win.top - _client.top;
+ 		var left = box.left + _win.left - _client.left;
+
+ 		return new Frame(left, top, box.width, box.height);
  	};
  	/* -- Private Window Methods -- */
 
@@ -48,10 +65,10 @@
  		this.bottom = this.top + this.height;
  	}
  	Frame.prototype.getArea = function() { return this.width * this.height; };
-    Frame.prototype.subtractFrom = function (r) 
-    {
-        return new Frame(this.left - r.left, this.top - r.top, this.width, this.height);
-    };
+ 	Frame.prototype.subtractFrom = function (r) 
+ 	{
+ 		return new Frame(this.left - r.left, this.top - r.top, this.width, this.height);
+ 	};
  	Frame.prototype.intersectionWith = function(r)
  	{
  		var 
@@ -78,15 +95,7 @@
  		__callback;
 
  		/* -- Private Helper Methods -- */
- 		var 
- 		getOffsetRect = function(element) 
- 		{
- 			var box = element.getBoundingClientRect();
- 			var top = box.top + _win.top - _client.top;
- 			var left = box.left + _win.left - _client.left;
-
- 			return new Frame(left, top, box.width, box.height);
- 		},
+ 		var
  		getElements = function(elements)
  		{
  			var _eType = elements.constructor.name || null;
@@ -140,6 +149,11 @@
  				unbindWindowObserver(); 
  		};
 
+ 		_self.isOnScreen = function(frame)
+ 		{
+ 			return frame.left<=_win.right && frame.right >= _win.left && frame.top <= _win.bottom && frame.bottom >= _win.top;
+ 		};
+
  		_self.getState = function(elements) 
  		{
  			if(elements === undefined)
@@ -157,11 +171,12 @@
  			{
  				var _e = __elements[i],
  				_frame = getOffsetRect(_e),
- 				_intersection = _frame.intersectionWith(_win);
+ 				_intersection = _frame.intersectionWith(_win),
+ 				_frameArea = _frame.getArea();
 
  				var state = new VisibilityState(_e);
 
- 				if(_intersection)
+ 				if(_intersection && _frame.width!==0 && _frame.height!==0)
  				{
  					var 
  					_intersectionArea = _intersection.getArea(),
@@ -175,7 +190,7 @@
  					};
 
  					state.visibilityRate = {
- 						both: _intersectionArea / _frame.getArea(),
+ 						both: _intersectionArea / _frameArea,
  						horizontal: _intersection.width / _frame.width,
  						vertical: _intersection.height / _frame.height
  					};
@@ -194,6 +209,7 @@
  					};
  					
  				}
+ 				state.onScreen = _self.isOnScreen(_frame);
  				states.push(state);
  			}
  			return states;	
@@ -207,17 +223,8 @@
  	/* -- Public Static Methods -- */
  	Visc.getNumberOfInstances = function () { return _instanced; };
  	Visc.getState = function (elements) { return new Visc().getState(elements); };
- 	Visc.isVisible = function(elements, min) 
- 	{  
- 		min = min || 0;
- 		if((!!window.jQuery && elements instanceof jQuery) || Array.isArray(elements))
- 			elements = elements[0];
-
- 		if(!elements.nodeType)
- 			return null;
- 		
- 		return new Visc().getState(elements)[0].visibilityRate.both >= min;
- 	};
+ 	Visc.isVisible = function (element, min) {   min = min || 0; return new Visc().getState(getFirstElement(element))[0].visibilityRate.both >= min; };
+ 	Visc.isOnScreen = function (element) { return new Visc().isOnScreen(getOffsetRect(getFirstElement(element))); };
  	/* -- Public Static Methods -- */
 
  	/* -- Visibility State Controller Class -- */
@@ -229,6 +236,7 @@
  		this.occupiedViewport = {both:0,horizontal:0,vertical:0};
  		this.maxVisibility = {both:0,horizontal:0,vertical:0};
  		this.element = element;
+ 		this.onScreen = false;
  		this.frames = {window: new Frame(0,0,0,0), viewport: new Frame(0,0,0,0), element: new Frame(0,0,0,0)};
  	}
  	/* -- Visibility State Class -- */

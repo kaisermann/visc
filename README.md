@@ -68,10 +68,12 @@ VisibilityState
 	// Frames relative to the element
 	frames = 
 	{
-		window: Rectangle,
-		element: Rectangle,
-		viewport: Rectangle
-	}
+		window: Rectangle Frame,
+		element: Rectangle Frame,
+		viewport: Rectangle Frame
+	},
+	// If the element is position on the screen (independent of its width and height)
+	onScreen: boolean,
 	// Current Element
 	element: Node;
 }
@@ -86,9 +88,11 @@ Visc.getState(selector);
 Visc.getNumberOfInstances();
 
 // Check if an element is visible on the viewport (boolean)
-// Accepts a node or a jQuery / Zepto Object (gets the first element of the list)
 // minValue: how much of the element must be visible to return true (0 to 1)
-Visc.isVisible(element, minValue)
+Visc.isVisible(elementOrList, minValue)
+
+// Check if an element is positioned on the screen (independent of its width and height)
+Visc.isOnScreen(elementOrList)
 ````
 
 ## Compatibility 
