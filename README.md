@@ -87,20 +87,18 @@ Visc.getState(selector);
 // Gets the number of event binded ViSC instances 
 Visc.getNumberOfInstances();
 
-/* 
- * Checks if a node or collection of nodes is visible on the viewport (boolean)
- * minValue: how much of each node must be visible to return true (0 to 1)
- *
- * Obs: In case of a collection, all its nodes must be visible to return true
- */
+// Checks if a node or collection of nodes is visible on the viewport (boolean)
+// minValue: how much of each node must be visible to return true (0 to 1)
 Visc.isVisible(nodeOrCollection, minValue)
 
-/* 
- * Checks if a node or a collection of nodes is positioned on the screen (independent of its width and height)
- *
- * Obs: In case of a collection, all its nodes must be visible to return true
- */
+// Checks if a node or a collection of nodes is positioned on the screen 
+// (independent of its width and height)
 Visc.isOnScreen(nodeOrCollection)
+
+
+// Obs: 
+// For 'isOnScreen' and 'isVisible', in case of a collection, 
+// all the nodes must be visible to return true
 ````
 
 ## Compatibility 
