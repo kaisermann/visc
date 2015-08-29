@@ -3,11 +3,16 @@
 ## Why?
 > Have you ever found yourself in the need of knowing how much of an element is visible to, let's say, animate some of it styles depending on the percentage? Well, there you go!
 
+## Compatibility 
+- IE 9+
+- jQuery & Zepto Compatible
+
 ## How To Use
 
 #### Details
 - 'Selector' can be a **string**, **node**, an **array of nodes**, a **NodeList** or a **jQuery object**.
 - The events callback and the **'getState'** methods return an array list of the **VisibilityState Object**.
+
 
 #### Vanilla JS
 ````
@@ -75,7 +80,7 @@ VisibilityState
 	// If the element is position on the screen (independent of its width and height)
 	onScreen: boolean,
 	// Current Element
-	element: Node;
+	element: Node
 }
 ````
 ### Static Methods
@@ -87,21 +92,77 @@ Visc.getState(selector);
 // Gets the number of event binded ViSC instances 
 Visc.getNumberOfInstances();
 
-// Checks if a node or collection of nodes is visible on the viewport (boolean)
+// Checks if a node or collection of nodes is visible on the viewport
 // minValue: how much of each node must be visible to return true (0 to 1)
-Visc.isVisible(nodeOrCollection, minValue);
+Visc.isVisible(selector[,min,[booleanIteratorMode]]);
 
 // Checks if a node or a collection of nodes is positioned on the screen 
 // (independent of its width and height)
-Visc.isOnScreen(nodeOrCollection);
-
-// Obs: 
-// 
+Visc.isOnScreen = function (selector[,booleanIteratorMode]) 
 ````
 
-##### Observation
->For 'isOnScreen' and 'isVisible', in case of a collection, all the nodes must be visible to return true
+##### BooleanIteratorMode
+>In case of a collection parameter, the default behaviour of 'isOnScreen' and 'isVisible' is to check if **all** the nodes are visible/on screen. To change it to return true if **at least** one of the nodes is visible/on screen you can set the parameter **booleanIteratorMode** to **Visc.BooleanIteratorMode.OR**.
+````
+Visc.BooleanIteratorMode { OR, AND }
+````
 
-## Compatibility 
-- IE 9+
-- jQuery & Zepto Compatible
+## Examples 
+##### Check if all '.blocks' are visible
+```` 
+var selector = ".block";
+var allVisible = Visc.isVisible(selector);
+
+if(allVisible)
+	console.log("I can see everything!!!!!");
+else
+	console.log("Where did everyone go???");
+````
+
+##### Check if at least one '.blocks' is visible
+```` 
+var selector = ".block";
+var oneVisibile = Visc.isVisible(selector, 0, Visc.BooleanIteratorMode.OR);
+
+if(oneVisibile)
+	console.log("Hey, I can see you!! Where are your other friends??");
+else
+	console.log("Where did everyone go???");
+````
+
+##### Check if scroll hit EACH zero width .block.tiny
+```` 
+var selector = ".block.tiny";
+Visc.bind(selector, function(states)
+{
+	states.forEach(function(state, i)
+	{
+		if(state.onScreen)
+			console.log("Hey, you are very thin but I can still see you!");
+	});
+});
+```` 
+
+##### Check if scroll hit ANY zero width .block.tiny
+```` 
+var selector = ".block.tiny";
+window.addEventListener("scroll", function()
+{
+	var onScreen = Visc.isOnScreen(selector, Visc.BooleanIteratorMode.OR);
+	if(onScreen)
+		console.log("Hey, you are very thin but I can still see you!");
+});
+````
+
+##### Check if scroll hit ALL zero width .block.tiny
+```` 
+var selector = ".block.tiny";
+window.addEventListener("scroll", function()
+{
+	var onScreen = Visc.isOnScreen(selector, 0);
+	if(onScreen)
+		console.log("Hey, you are very thin but I can still see you!");
+});
+````
+
+##### And so on...

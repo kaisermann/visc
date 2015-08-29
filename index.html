@@ -32,7 +32,9 @@
 		}
 		.block::after { top: auto; left:auto; right:0; bottom: 0; }
 		.big { width:1000px; background: #404040; }
-		.biggest { width: 2000px; background: #202020; }
+		.biggest { width: 2000px; height:300px; background: #202020; }
+		.smallest { width: 100px; height: 90px; }
+		.tiny { height: 0; }
 	</style>
 </head>
 <body>
@@ -41,32 +43,38 @@
 	<div class="block small"></div>
 	<div class="block big"></div>
 	<div class="block biggest"></div>
+	<div class="block big"></div>
+	<div class="block small"></div>
+	<div class="block big"></div>
+	<div class="block small"></div>
+	<div class="block big"></div>
 	<div class="block biggest"></div>
-	<div class="block big"></div>
 	<div class="block small"></div>
 	<div class="block big"></div>
 	<div class="block small"></div>
+	<div class="block tiny"></div>
 	<div class="block big"></div>
-	<div class="block small"></div>
-	<div class="block big"></div>
-	<div class="block small"></div>
-	<div class="block big"></div>
+	<div class="block tiny"></div>
+	<div class="block tiny"></div>
+	<div class="block smallest"></div>
+	<div class="block smallest"></div>
+	<div class="block smallest"></div>
 	
 	<script src="libs/jquery.js"></script>
-	<script src="dist/visc.min.js"></script>
+	<script src="dist/visc.js"></script>
 	<script>	
 
 		/*
 		$('.small').visc(function(states) 
 		{
 			console.log("-----small-----");
-			console.log(this);
 			console.log(states[1].element);
 			console.log(states[1].visibilityRate);
 			console.log(states[1].occupiedViewport);
 			console.log(states[1].maxVisibility);
 		});
-*/
+		*/
+
 /*
 		$('.block.big').visc(function(states) 
 		{
@@ -78,7 +86,7 @@
 		});
 		console.log($('.small').visc('getState'));
 		*/
-		/*
+
 		var visc = new Visc();
 		visc.bind('.block', function(states) 
 		{			
@@ -89,18 +97,29 @@
 				var color_delta = item.frames.element.left*0.01;
 				var color = Math.round(100 * (1 + color_delta));
 
-				console.log(item);
-
 				item.element.style.backgroundColor = "rgb("+color+","+color+",200)";
 				item.element.setAttribute("data-opacity", Math.round(visibility_vertical_delta * 100) + "%");
 				item.element.style.opacity = item.visibilityRate.vertical;
 			}
 		});
-*/
-		var element = document.querySelectorAll(".biggest")[0];
+
+		var test_selectors = [".biggest", ".smallest", ".tiny"];
+
 		window.addEventListener("scroll", function()
 		{
-			console.log("UEUEUEUE: "+ Visc.isVisible($(".biggest")));
+			test_selectors.forEach(function(val, i)
+			{
+				var selector = val;
+				console.log("At least one '"+val+"' is visible/onscreen");
+				console.log(Visc.isVisible(selector, 0, Visc.BooleanIteratorMode.OR));
+				console.log(Visc.isOnScreen(selector, Visc.BooleanIteratorMode.OR));
+				console.log("----");
+				console.log("All '"+val+"' are visible/onscreen");
+				console.log(Visc.isVisible(selector, 0, Visc.BooleanIteratorMode.AND));
+				console.log(Visc.isOnScreen(selector, Visc.BooleanIteratorMode.AND));
+				console.log("----");
+			});
+
 		});
 
 

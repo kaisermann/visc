@@ -1,5 +1,5 @@
 /*
- * ViSC - Visibility State Controller JS v1.2.0
+ * ViSC - Visibility State Controller JS v1.3.0
  * Elements Visibility State Controller
  * https://github.com/chriskaisermann/ViSC
  * by Christian Kaisermann
@@ -43,18 +43,39 @@
 
  		return new Frame(left, top, box.width, box.height);
  	},
- 	booleanIterator = function(nodeOrCollection, callback)
+ 	getBooleanStatement = function(collection, callback, iteratorMode)
  	{
- 		if(isCollection(nodeOrCollection))
+ 		var _cacheANDMode = Visc.BooleanIteratorMode.AND;
+ 		iteratorMode = iteratorMode || Visc.BooleanIteratorMode.AND;
+
+ 		var returnValue = (iteratorMode === _cacheANDMode)?true:false;
+ 		for(var i = 0, len = collection.length; i < len; i++)
  		{
- 			var returnValue = true;
- 			for(var i = 0, len = nodeOrCollection.length; i < len; i++)
- 				returnValue &= callback(nodeOrCollection[i]);
- 			return !!returnValue;
+ 			if(iteratorMode === _cacheANDMode)
+ 				returnValue &= callback(collection[i]);
+ 			else
+ 				returnValue |= callback(collection[i]);
  		}
- 		return callback(nodeOrCollection);
+ 		return !!returnValue;
  	},
- 	isCollection = function(o) { return o.length!==undefined; };
+ 	isCollection = function(o) { return o.length!==undefined; },
+ 	isFrameOnScreen = function(frame) { return !!_win.intersectionWith(frame); },
+ 	getNodes = function(unknownObj)
+ 	{
+ 		if(typeof unknownObj === "string")
+ 			return document.querySelectorAll(unknownObj);
+
+ 		if(!!window.jQuery  && unknownObj instanceof jQuery)
+ 			return jQuery.makeArray(unknownObj);
+
+ 		if(isCollection(unknownObj))
+ 			return unknownObj;
+ 		
+ 		if(unknownObj.nodeType)
+ 			return [unknownObj];
+
+ 		return null;
+ 	};
  	/* -- Private Window Methods -- */
 
  	/* -- Frame Class -- */
@@ -92,39 +113,22 @@
 
  	var Visc = function() 
  	{
- 		var _self = this,
+ 		var __self = this,
  		__elements = [],
  		__binded = false,
  		__callback;
 
  		/* -- Private Helper Methods -- */
  		var
- 		getElements = function(elements)
- 		{
- 			var _eType = elements.constructor.name || null;
- 			__elements = [];
- 			if(typeof elements === "string")
- 				__elements = _Slice.call(document.querySelectorAll(elements), 0);
- 			if(!!window.jQuery  && elements instanceof jQuery)
- 				__elements = jQuery.makeArray(elements);
- 			else if(_eType==="NodeList")
- 				__elements = _Slice.call(elements, 0);
- 			else if(Array.isArray(elements))
- 				__elements = elements;
- 			else if(elements.nodeType)
- 				__elements.push(elements);
- 			else
- 				return null;
- 		},
  		windowChanged = function()
  		{
  			if(!!__callback)
- 				__callback.call(_self,_self.getState(__elements));
+ 				__callback.call(__self,__self.getState(__elements));
  		};
  		/* -- Private Helper Methods -- */
 
  		/* -- Privilleged Methods -- */
- 		_self.bind = function(element, callback)
+ 		__self.bind = function(element, callback)
  		{
  			if(!(_instanced++))
  				bindWindowObserver();
@@ -133,16 +137,16 @@
  				__callback = callback;
  			else
  				console.error("[Visc: Invalid Callback]");
- 			getElements(element);
+ 			__elements = getNodes(element);
 
  			__binded = true;
  			window.addEventListener("resize", windowChanged);
  			window.addEventListener("scroll", windowChanged);
  		};
 
- 		_self.unbind = function () 
+ 		__self.unbind = function () 
  		{
- 			_self.__elements = [];
+ 			__self.__elements = [];
 
  			__binded = false; 
  			window.removeEventListener("resize", windowChanged);
@@ -152,23 +156,18 @@
  				unbindWindowObserver(); 
  		};
 
- 		_self.isOnScreen = function(frame)
- 		{
- 			return frame.left<=_win.right && frame.right >= _win.left && frame.top <= _win.bottom && frame.bottom >= _win.top;
- 		};
-
- 		_self.getState = function(elements) 
+ 		__self.getState = function(elements) 
  		{
  			if(elements === undefined)
  				return null;
 
  			if(!__elements.length)
- 				getElements(elements);
+ 				__elements = getNodes(elements);
 
  			if(!__binded)
  				updateWindowSize();
 
- 			var states = []; 		
+ 			var _states = []; 		
 
  			for(var i = 0; i < __elements.length; i++)
  			{
@@ -177,7 +176,7 @@
  				_intersection = _frame.intersectionWith(_win),
  				_frameArea = _frame.getArea();
 
- 				var state = new VisibilityState(_e);
+ 				var _state = new VisibilityState(_e);
 
  				if(_intersection && _frame.width!==0 && _frame.height!==0)
  				{
@@ -186,25 +185,25 @@
  					_minWidth = Math.min(_frame.width, _win.width),
  					_minHeight = Math.min(_frame.height, _win.height);
 
- 					state.frames = { 
+ 					_state.frames = { 
  						window: _intersection,
  						viewport: _intersection.subtractFrom(_win),
  						element: _intersection.subtractFrom(_frame)
  					};
 
- 					state.visibilityRate = {
+ 					_state.visibilityRate = {
  						both: _intersectionArea / _frameArea,
  						horizontal: _intersection.width / _frame.width,
  						vertical: _intersection.height / _frame.height
  					};
 
- 					state.occupiedViewport = {
+ 					_state.occupiedViewport = {
  						both: _intersectionArea / _win.getArea(),
  						horizontal: _intersection.width / _win.width,
  						vertical: _intersection.height / _win.height
  					};
 
- 					state.maxVisibility =
+ 					_state.maxVisibility =
  					{
  						both: _intersectionArea / (_minWidth * _minHeight),
  						horizontal: _intersection.width / _minWidth,
@@ -212,35 +211,41 @@
  					};
 
  				}
- 				state.onScreen = _self.isOnScreen(_frame);
- 				states.push(state);
+ 				_state.onScreen = isFrameOnScreen(_frame);
+ 				_states.push(_state);
  			}
- 			return states;	
+ 			return _states;	
  		};
  		/* -- Privilleged Methods -- */
 
  		updateWindowSize();
  	};
 
+ 	/* -- Public BooleanIterator Enum -- */
+ 	Visc.BooleanIteratorMode = {AND:0,OR:1};
+ 	/* -- Public BooleanIterator Enum -- */
 
  	/* -- Public Static Methods -- */
  	Visc.getNumberOfInstances = function () { return _instanced; };
  	Visc.getState = function (elements) { return new Visc().getState(elements); };
- 	Visc.isVisible = function (nodeOrCollection, min) 
+ 	Visc.isVisible = function (nodeOrCollection, min, booleanIteratorMode) 
  	{ 
- 		min = min || 0.000; 
- 		return booleanIterator(Visc.getState(nodeOrCollection), function(state)
+ 		if(!booleanIteratorMode || !min)
+ 			min = 0;
+
+ 		return getBooleanStatement(Visc.getState(getNodes(nodeOrCollection)), function(state)
  		{
- 			var rate = state.visibilityRate.both;
- 			return rate > 0 && rate >= min;
- 		});
+ 			var rate = state.maxVisibility.both;
+ 			return (rate > 0 && rate >= min) || rate == 1;
+ 		}, booleanIteratorMode);
  	};
- 	Visc.isOnScreen = function (nodeOrCollection) 
+ 	Visc.isOnScreen = function (nodeOrCollection, booleanIteratorMode) 
  	{ 
- 		return booleanIterator(nodeOrCollection, function(element)
+ 		updateWindowSize();
+ 		return getBooleanStatement(getNodes(nodeOrCollection), function(element)
  		{
- 			return new Visc().isOnScreen(getOffsetRect(element));
- 		});
+ 			return isFrameOnScreen(getOffsetRect(element));
+ 		}, booleanIteratorMode);
  	};
  	/* -- Public Static Methods -- */
 
@@ -264,10 +269,9 @@
  		$.fn.visc = function (method) 
  		{
  			if(method==="getState")
- 			{
  				return Visc.getState(this);
- 			}
- 			else if (typeof method === 'function' || !method) 
+ 			
+ 			if (typeof method === 'function') 
  			{
  				var vsc = new Visc();
  				this.data('visc', vsc);
