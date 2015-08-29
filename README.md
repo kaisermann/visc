@@ -138,7 +138,7 @@ Visc.bind(selector, function(states)
 	states.forEach(function(state, i)
 	{
 		if(state.onScreen)
-			console.log("Hey, you are very thin but I can still see you!");
+			console.log("Hey, you are very thin, but I can still see you!");
 	});
 });
 ```` 
@@ -150,7 +150,7 @@ window.addEventListener("scroll", function()
 {
 	var onScreen = Visc.isOnScreen(selector, Visc.BooleanIteratorMode.OR);
 	if(onScreen)
-		console.log("Hey, you are very thin but I can still see you!");
+		console.log("Hey, you are very thin, but I can still see you!");
 });
 ````
 
@@ -161,7 +161,7 @@ window.addEventListener("scroll", function()
 {
 	var onScreen = Visc.isOnScreen(selector, 0);
 	if(onScreen)
-		console.log("Hey, you are very thin but I can still see you!");
+		console.log("Hey, you are very thin, but I can still see you!");
 });
 ````
 
