@@ -111,12 +111,12 @@
 			{
 				var selector = val;
 				console.log("At least one '"+val+"' is visible/onscreen");
-				console.log(Visc.isVisible(selector, 0, Visc.BooleanIteratorMode.OR));
-				console.log(Visc.isOnScreen(selector, Visc.BooleanIteratorMode.OR));
+				console.log(Visc.isVisible(selector, 0, Visc.BooleanMode.OR));
+				console.log(Visc.isOnScreen(selector, Visc.BooleanMode.OR));
 				console.log("----");
 				console.log("All '"+val+"' are visible/onscreen");
-				console.log(Visc.isVisible(selector, 0, Visc.BooleanIteratorMode.AND));
-				console.log(Visc.isOnScreen(selector, Visc.BooleanIteratorMode.AND));
+				console.log(Visc.isVisible(selector, 0, Visc.BooleanMode.AND));
+				console.log(Visc.isOnScreen(selector, Visc.BooleanMode.AND));
 				console.log("----");
 			});
 

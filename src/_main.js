@@ -43,15 +43,15 @@
 
  		return new Frame(left, top, box.width, box.height);
  	},
- 	getBooleanStatement = function(collection, callback, iteratorMode)
+ 	getBooleanStatement = function(collection, callback, booleanMode)
  	{
- 		var _cacheANDMode = Visc.BooleanIteratorMode.AND;
- 		iteratorMode = iteratorMode || Visc.BooleanIteratorMode.AND;
+ 		var _cacheANDMode = Visc.BooleanMode.AND;
+ 		booleanMode = booleanMode || Visc.BooleanMode.AND;
 
- 		var returnValue = (iteratorMode === _cacheANDMode)?true:false;
+ 		var returnValue = (booleanMode === _cacheANDMode)?true:false;
  		for(var i = 0, len = collection.length; i < len; i++)
  		{
- 			if(iteratorMode === _cacheANDMode)
+ 			if(booleanMode === _cacheANDMode)
  				returnValue &= callback(collection[i]);
  			else
  				returnValue |= callback(collection[i]);
@@ -137,9 +137,10 @@
  				__callback = callback;
  			else
  				console.error("[Visc: Invalid Callback]");
- 			__elements = getNodes(element);
 
+ 			__elements = getNodes(element);
  			__binded = true;
+ 			
  			window.addEventListener("resize", windowChanged);
  			window.addEventListener("scroll", windowChanged);
  		};
@@ -221,31 +222,31 @@
  		updateWindowSize();
  	};
 
- 	/* -- Public BooleanIterator Enum -- */
- 	Visc.BooleanIteratorMode = {AND:0,OR:1};
- 	/* -- Public BooleanIterator Enum -- */
+ 	/* -- Public BooleanMode Enum -- */
+ 	Visc.BooleanMode = {AND:0,OR:1};
+ 	/* -- Public BooleanMode Enum -- */
 
  	/* -- Public Static Methods -- */
  	Visc.getNumberOfInstances = function () { return _instanced; };
  	Visc.getState = function (elements) { return new Visc().getState(elements); };
- 	Visc.isVisible = function (nodeOrCollection, min, booleanIteratorMode) 
+ 	Visc.isVisible = function (nodeOrCollection, min, booleanMode) 
  	{ 
- 		if(!booleanIteratorMode || !min)
+ 		if(!booleanMode || !min)
  			min = 0;
 
  		return getBooleanStatement(Visc.getState(getNodes(nodeOrCollection)), function(state)
  		{
  			var rate = state.maxVisibility.both;
  			return (rate > 0 && rate >= min) || rate == 1;
- 		}, booleanIteratorMode);
+ 		}, booleanMode);
  	};
- 	Visc.isOnScreen = function (nodeOrCollection, booleanIteratorMode) 
+ 	Visc.isOnScreen = function (nodeOrCollection, booleanMode) 
  	{ 
  		updateWindowSize();
  		return getBooleanStatement(getNodes(nodeOrCollection), function(element)
  		{
  			return isFrameOnScreen(getOffsetRect(element));
- 		}, booleanIteratorMode);
+ 		}, booleanMode);
  	};
  	/* -- Public Static Methods -- */
 

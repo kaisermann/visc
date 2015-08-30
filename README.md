@@ -94,17 +94,17 @@ Visc.getNumberOfInstances();
 
 // Checks if a node or collection of nodes is visible on the viewport
 // minValue: how much of each node must be visible to return true (0 to 1)
-Visc.isVisible(selector[,min,[booleanIteratorMode]]);
+Visc.isVisible(selector[,min,[booleanMode]]);
 
 // Checks if a node or a collection of nodes is positioned on the screen 
 // (independent of its width and height)
-Visc.isOnScreen = function (selector[,booleanIteratorMode]) 
+Visc.isOnScreen = function (selector[,booleanMode]) 
 ````
 
-##### BooleanIteratorMode
->In case of a collection parameter, the default behaviour of 'isOnScreen' and 'isVisible' is to check if **all** the nodes are visible/on screen. To change it to return true if **at least** one of the nodes is visible/on screen you can set the parameter **booleanIteratorMode** to **Visc.BooleanIteratorMode.OR**.
+##### BooleanMode
+>In case of a collection parameter, the default behaviour of 'isOnScreen' and 'isVisible' is to check if **all** the nodes are visible/on screen. To change it to return true if **at least** one of the nodes is visible/on screen you can set the parameter **BooleanMode** to **Visc.BooleanMode.OR**.
 ````
-Visc.BooleanIteratorMode { OR, AND }
+Visc.BooleanMode { OR, AND }
 ````
 
 ## Examples 
@@ -122,7 +122,7 @@ else
 ##### Check if at least one '.blocks' is visible
 ```` 
 var selector = ".block";
-var oneVisibile = Visc.isVisible(selector, 0, Visc.BooleanIteratorMode.OR);
+var oneVisibile = Visc.isVisible(selector, 0, Visc.BooleanMode.OR);
 
 if(oneVisibile)
 	console.log("Hey, I can see you!! Where are your other friends??");
@@ -133,7 +133,7 @@ else
 ##### Check if scroll hit EACH zero width .block.tiny
 ```` 
 var selector = ".block.tiny";
-Visc.bind(selector, function(states)
+new Visc().bind(selector, function(states)
 {
 	states.forEach(function(state, i)
 	{
@@ -148,7 +148,7 @@ Visc.bind(selector, function(states)
 var selector = ".block.tiny";
 window.addEventListener("scroll", function()
 {
-	var onScreen = Visc.isOnScreen(selector, Visc.BooleanIteratorMode.OR);
+	var onScreen = Visc.isOnScreen(selector, Visc.BooleanMode.OR);
 	if(onScreen)
 		console.log("Hey, you are very thin, but I can still see you!");
 });
@@ -161,7 +161,7 @@ window.addEventListener("scroll", function()
 {
 	var onScreen = Visc.isOnScreen(selector, 0);
 	if(onScreen)
-		console.log("Hey, you are very thin, but I can still see you!");
+		console.log("Hey, you and your friends are very thin, but I can still see you!");
 });
 ````
 
