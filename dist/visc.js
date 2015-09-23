@@ -1,7 +1,7 @@
 /*
  * ViSC - Visibility State Controller JS v1.3.0
  * Elements Visibility State Controller
- * https://github.com/chriskaisermann/ViSC
+ * https://github.com/kaisermann/visc
  * by Christian Kaisermann
  */
 
