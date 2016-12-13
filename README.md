@@ -1,9 +1,9 @@
-# ViSC - Visibility State Controller JS
+# visc - Visibility State Controller JS
 
 ## Why?
 > Have you ever found yourself in the need of knowing how much of an element is visible to, let's say, animate some of it styles depending on the percentage? Well, there you go!
 
-## Compatibility 
+## Compatibility
 - IE 9+
 - jQuery & Zepto Compatible
 
@@ -18,18 +18,18 @@
 ````
 var selector = ".element";
 
-// Creates a new ViSController
+// Creates a new visc
 var visc = new Visc();
 
 // Binds the scroll and resize events with a callback
 // attached to the elements queried by the selector.
 visc.bind(selector, function(states) {});
 
-// Unbind all ViSC events related to the selector
+// Unbind all visc events related to the selector
 visc.unbind();
 
 // Gets the visibility state of a selector without
-// binding scroll and resize events. 
+// binding scroll and resize events.
 var states = Visc.getState(selector);
 ````
 
@@ -40,11 +40,11 @@ var selector = ".element";
 // Binds the scroll and resize events with a callback.
 $(selector).visc(function(states){});
 
-// Unbind all ViSC events related to the selector
+// Unbind all visc events related to the selector
 $(selector).unvisc();
 
 // Gets the visibility state of a selector without
-// binding scroll and resize events. 
+// binding scroll and resize events.
 var states = $(selector).visc('getState');
 ````
 
@@ -53,25 +53,25 @@ var states = $(selector).visc('getState');
 VisibilityState
 {
 	// How much of the element is visible?
-	visibilityRate: { 
-		both: Percentage, 
+	visibilityRate: {
+		both: Percentage,
 		horizontal: Percentage,
 		vertical: Percentage
 	},
 	// How much space does the element occupies in the viewport?
-	occupiedViewport: { 
-		both: Percentage, 
+	occupiedViewport: {
+		both: Percentage,
 		horizontal: Percentage,
 		vertical: Percentage
 	},
 	// How much of the element you can see in your viewport?
-	maxVisibility = { 
-		both: Percentage, 
+	maxVisibility = {
+		both: Percentage,
 		horizontal: Percentage,
 		vertical: Percentage
 	},
 	// Frames relative to the element
-	frames = 
+	frames =
 	{
 		window: Rectangle Frame,
 		element: Rectangle Frame,
@@ -86,19 +86,19 @@ VisibilityState
 ### Static Methods
 ````
 // Gets the visibility state of a selector without
-// binding scroll and resize events. 
+// binding scroll and resize events.
 Visc.getState(selector);
 
-// Gets the number of event binded ViSC instances 
-Visc.getNumberOfInstances();
+// Gets the number of event binded visc instances
+Visc.numberOfInstances;
 
 // Checks if a node or collection of nodes is visible on the viewport
 // minValue: how much of each node must be visible to return true (0 to 1)
 Visc.isVisible(selector[,min,[booleanMode]]);
 
-// Checks if a node or a collection of nodes is positioned on the screen 
+// Checks if a node or a collection of nodes is positioned on the screen
 // (independent of its width and height)
-Visc.isOnScreen = function (selector[,booleanMode]) 
+Visc.isOnScreen = function (selector[,booleanMode])
 ````
 
 ##### BooleanMode
@@ -107,9 +107,9 @@ Visc.isOnScreen = function (selector[,booleanMode])
 Visc.BooleanMode { OR, AND }
 ````
 
-## Examples 
+## Examples
 ##### Check if all '.blocks' are visible
-```` 
+````
 var selector = ".block";
 var allVisible = Visc.isVisible(selector);
 
@@ -120,7 +120,7 @@ else
 ````
 
 ##### Check if at least one '.blocks' is visible
-```` 
+````
 var selector = ".block";
 var oneVisibile = Visc.isVisible(selector, 0, Visc.BooleanMode.OR);
 
@@ -131,7 +131,7 @@ else
 ````
 
 ##### Check if scroll hit EACH zero width .block.tiny
-```` 
+````
 var selector = ".block.tiny";
 new Visc().bind(selector, function(states)
 {
@@ -141,10 +141,10 @@ new Visc().bind(selector, function(states)
 			console.log("Hey, you are very thin, but I can still see you!");
 	});
 });
-```` 
+````
 
 ##### Check if scroll hit ANY zero width .block.tiny
-```` 
+````
 var selector = ".block.tiny";
 window.addEventListener("scroll", function()
 {
@@ -155,7 +155,7 @@ window.addEventListener("scroll", function()
 ````
 
 ##### Check if scroll hit ALL zero width .block.tiny
-```` 
+````
 var selector = ".block.tiny";
 window.addEventListener("scroll", function()
 {

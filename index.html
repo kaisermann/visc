@@ -1,128 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>Demo - ViSC - Visibility State Controller</title>
-	<style>
-		body
-		{
-			font-family: Arial, sans-serif;
-		}
+  <meta charset="UTF-8">
+  <title>Demo - ViSC - Visibility State Controller</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
 
-		.block 
-		{ 
-			margin-left: auto; 
-			margin-right: auto; 
-			width: 300px; height: 300px; 
-			margin-top: 100px;
-			margin-bottom: 100px;
-			background-color: #606060; 
-			position: relative;
-		}
-		.block::before,
-		.block::after
-		{
-			content: attr(data-opacity);
-			position: absolute;
-			top: 0;
-			left: 0;
-			background-color: whitesmoke;
-			color: #404040;
-			padding: 5px 8px;
-		}
-		.block::after { top: auto; left:auto; right:0; bottom: 0; }
-		.big { width:1000px; background: #404040; }
-		.biggest { width: 2000px; height:300px; background: #202020; }
-		.smallest { width: 100px; height: 90px; }
-		.tiny { height: 0; }
-	</style>
+    .block {
+      margin-left: auto;
+      margin-right: auto;
+      width: 300px;
+      height: 300px;
+      margin-top: 100px;
+      margin-bottom: 100px;
+      background-color: #606060;
+      position: relative;
+    }
+
+    .block::before,
+    .block::after {
+      content: attr(data-opacity);
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: whitesmoke;
+      color: #404040;
+      padding: 5px 8px;
+    }
+
+    .block::after {
+      top: auto;
+      left: auto;
+      right: 0;
+      bottom: 0;
+    }
+
+    .big {
+      width: 1000px;
+      background: #404040;
+    }
+
+    .biggest {
+      width: 2000px;
+      height: 300px;
+      background: #202020;
+    }
+
+    .smallest {
+      width: 100px;
+      height: 90px;
+    }
+
+    .tiny {
+      height: 0;
+    }
+  </style>
 </head>
+
 <body>
-	
-	<div class="block small"></div>
-	<div class="block small"></div>
-	<div class="block big"></div>
-	<div class="block biggest"></div>
-	<div class="block big"></div>
-	<div class="block small"></div>
-	<div class="block big"></div>
-	<div class="block small"></div>
-	<div class="block big"></div>
-	<div class="block biggest"></div>
-	<div class="block small"></div>
-	<div class="block big"></div>
-	<div class="block small"></div>
-	<div class="block tiny"></div>
-	<div class="block big"></div>
-	<div class="block tiny"></div>
-	<div class="block tiny"></div>
-	<div class="block smallest"></div>
-	<div class="block smallest"></div>
-	<div class="block smallest"></div>
-	
-	<script src="libs/jquery.js"></script>
-	<script src="dist/visc.js"></script>
-	<script>	
 
-		/*
-		$('.small').visc(function(states) 
-		{
-			console.log("-----small-----");
-			console.log(states[1].element);
-			console.log(states[1].visibilityRate);
-			console.log(states[1].occupiedViewport);
-			console.log(states[1].maxVisibility);
-		});
-		*/
+  <div class="block small"></div>
+  <div class="block small"></div>
+  <div class="block big"></div>
+  <div class="block biggest"></div>
+  <div class="block big"></div>
+  <div class="block small"></div>
+  <div class="block big"></div>
+  <div class="block small"></div>
+  <div class="block big"></div>
+  <div class="block biggest"></div>
+  <div class="block small"></div>
+  <div class="block big"></div>
+  <div class="block small"></div>
+  <div class="block tiny"></div>
+  <div class="block big"></div>
+  <div class="block tiny"></div>
+  <div class="block tiny"></div>
+  <div class="block smallest"></div>
+  <div class="block smallest"></div>
+  <div class="block smallest"></div>
 
-/*
-		$('.block.big').visc(function(states) 
-		{
-			console.log("-----big-----");
-			console.log(states[0].element);
-			console.log(states[0].visibilityRate);
-			console.log(states[0].occupiedViewport);
-			console.log(states[0].maxVisibility);
-		});
-		console.log($('.small').visc('getState'));
-		*/
+  <script src="libs/jquery.js"></script>
+  <script src="dist/visc.js"></script>
+  <script>
+    /*
+    		$('.small').visc(function(states)
+    		{
+    			console.log("-----small-----");
+    			console.log(states[1].node);
+    			console.log(states[1].visibilityRate);
+    			console.log(states[1].occupiedViewport);
+    			console.log(states[1].maxVisibility);
+    		});
+    		*/
 
-		var visc = new Visc();
-		visc.bind('.block', function(states) 
-		{			
-			for(var i = 0; i < states.length; i++)
-			{
-				var item = states[i];
-				var visibility_vertical_delta = item.visibilityRate.vertical;
-				var color_delta = item.frames.element.left*0.01;
-				var color = Math.round(100 * (1 + color_delta));
+    /*
+    		$('.block.big').visc(function(states)
+    		{
+    			console.log("-----big-----");
+    			console.log(states[0].node);
+    			console.log(states[0].visibilityRate);
+    			console.log(states[0].occupiedViewport);
+    			console.log(states[0].maxVisibility);
+    		});
+    		console.log($('.small').visc('getState'));
+    		*/
 
-				item.element.style.backgroundColor = "rgb("+color+","+color+",200)";
-				item.element.setAttribute("data-opacity", Math.round(visibility_vertical_delta * 100) + "%");
-				item.element.style.opacity = item.visibilityRate.vertical;
-			}
-		});
+    new Visc().bind('.block', function(states) {
+      for (var i = 0; i < states.length; i++) {
+        var item = states[i];
+        var visibility_vertical_delta = item.visibilityRate.vertical;
+        var color_delta = item.frames.node.left * 0.01;
+        var color = Math.round(100 * (1 + color_delta));
 
-		var test_selectors = [".biggest", ".smallest", ".tiny"];
+        item.node.style.backgroundColor = "rgb(" + color + "," + color + ",200)";
+        item.node.setAttribute("data-opacity", Math.round(visibility_vertical_delta * 100) + "%");
+        item.node.style.opacity = item.visibilityRate.vertical;
+      }
+    });
 
-		window.addEventListener("scroll", function()
-		{
-			test_selectors.forEach(function(val, i)
-			{
-				var selector = val;
-				console.log("At least one '"+val+"' is visible/onscreen");
-				console.log(Visc.isVisible(selector, 0, Visc.BooleanMode.OR));
-				console.log(Visc.isOnScreen(selector, Visc.BooleanMode.OR));
-				console.log("----");
-				console.log("All '"+val+"' are visible/onscreen");
-				console.log(Visc.isVisible(selector, 0, Visc.BooleanMode.AND));
-				console.log(Visc.isOnScreen(selector, Visc.BooleanMode.AND));
-				console.log("----");
-			});
+    var test_selectors = [".biggest", ".smallest", ".tiny"];
 
-		});
+    window.addEventListener("scroll", function() {
+      test_selectors.forEach(function(val, i) {
+        var selector = val;
+        console.log("At least one '" + val + "' is visible/onscreen");
+        console.log(Visc.isVisible(selector, 0, Visc.BooleanMode.OR));
+        console.log(Visc.isOnScreen(selector, Visc.BooleanMode.OR));
+        console.log("----");
+        console.log("All '" + val + "' are visible/onscreen");
+        console.log(Visc.isVisible(selector, 0, Visc.BooleanMode.AND));
+        console.log(Visc.isOnScreen(selector, Visc.BooleanMode.AND));
+        console.log("----");
+      });
 
-
-	</script>
+    });
+  </script>
 </body>
+
 </html>

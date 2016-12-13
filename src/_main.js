@@ -1,291 +1,299 @@
-/*
- * ViSC - Visibility State Controller JS v1.3.0
- * Elements Visibility State Controller
- * https://github.com/kaisermann/visc
- * by Christian Kaisermann
- */
+(function (window, $, undefined) {
+  'use strict';
 
- (function(window, $, undefined)
- {
- 	'use strict';
+  let
+    _win = {},
+    _client = {},
+    _instanced = 0;
 
- 	var
- 	_Slice = Array.prototype.slice,
- 	_win = {},
- 	_client = {},
- 	_instanced = 0;
+  /* Private Window Methods */
+  const updateWindowSize = function () {
+    _client = {
+      top: document.documentElement.clientTop,
+      left: document.documentElement.clientLeft
+    };
+    _win = new Frame(
+      window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
+      window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop,
+      window.innerWidth, window.innerHeight);
+  };
 
- 	/* Private Window Methods */
- 	var 
- 	bindWindowObserver = function() 
- 	{  
- 		window.addEventListener("resize", updateWindowSize);
- 		window.addEventListener("scroll", updateWindowSize);
- 	},
- 	unbindWindowObserver = function () 
- 	{
- 		window.removeEventListener("resize", updateWindowSize);
- 		window.removeEventListener("scroll", updateWindowSize);
- 	},
- 	updateWindowSize = function()
- 	{
- 		_client = { top: document.documentElement.clientTop, left: document.documentElement.clientLeft };
- 		_win = new Frame(
- 			window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
- 			window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop, 
- 			window.innerWidth, window.innerHeight);
- 	},
- 	getOffsetRect = function(element) 
- 	{
- 		var box = element.getBoundingClientRect();
- 		var top = box.top + _win.top - _client.top;
- 		var left = box.left + _win.left - _client.left;
+  const getBooleanStatement = function (booleanMode, collection, callback) {
+    let returnVal = (booleanMode === Visc.BooleanMode.AND);
+    for (let i = 0; i < collection.length; i++) {
+      if (booleanMode === Visc.BooleanMode.AND) {
+        returnVal &= callback(collection[i]);
+      } else {
+        returnVal |= callback(collection[i]);
+      }
+    }
+    return !!returnVal;
+  };
 
- 		return new Frame(left, top, box.width, box.height);
- 	},
- 	getBooleanStatement = function(collection, callback, booleanMode)
- 	{
- 		var _cacheANDMode = Visc.BooleanMode.AND;
- 		booleanMode = booleanMode || Visc.BooleanMode.AND;
+  const isFrameOnScreen = function (frame) {
+    return !!_win.intersectionWith(frame);
+  };
 
- 		var returnValue = (booleanMode === _cacheANDMode)?true:false;
- 		for(var i = 0, len = collection.length; i < len; i++)
- 		{
- 			if(booleanMode === _cacheANDMode)
- 				returnValue &= callback(collection[i]);
- 			else
- 				returnValue |= callback(collection[i]);
- 		}
- 		return !!returnValue;
- 	},
- 	isCollection = function(o) { return o.length!==undefined; },
- 	isFrameOnScreen = function(frame) { return !!_win.intersectionWith(frame); },
- 	getNodes = function(unknownObj)
- 	{
- 		if(typeof unknownObj === "string")
- 			return document.querySelectorAll(unknownObj);
+  const getNodes = function (unknownObj) {
+    if (typeof unknownObj === 'string') {
+      return document.querySelectorAll(unknownObj);
+    }
 
- 		if(!!window.jQuery  && unknownObj instanceof jQuery)
- 			return jQuery.makeArray(unknownObj);
+    if (!!window.jQuery && unknownObj instanceof jQuery) {
+      return jQuery.makeArray(unknownObj);
+    }
 
- 		if(isCollection(unknownObj))
- 			return unknownObj;
- 		
- 		if(unknownObj.nodeType)
- 			return [unknownObj];
+    if (unknownObj.length !== undefined && typeof unknownObj !== 'function') {
+      return unknownObj;
+    }
 
- 		return null;
- 	};
- 	/* -- Private Window Methods -- */
+    if (unknownObj.nodeType) {
+      return [unknownObj];
+    }
 
- 	/* -- Frame Class -- */
- 	function Frame(x, y, w, h)
- 	{
- 		this.left = Math.round(x);
- 		this.top = Math.round(y);
- 		this.width = Math.round(w);
- 		this.height = Math.round(h);
- 		this.right = this.left + this.width;
- 		this.bottom = this.top + this.height;
- 	}
- 	Frame.prototype.getArea = function() { return this.width * this.height; };
- 	Frame.prototype.subtractFrom = function (r) 
- 	{
- 		return new Frame(this.left - r.left, this.top - r.top, this.width, this.height);
- 	};
- 	Frame.prototype.intersectionWith = function(r)
- 	{
- 		var 
- 		top = Math.max(this.top, r.top),
- 		left = Math.max(this.left, r.left),
- 		right = Math.min(this.right, r.right),
- 		bottom = Math.min(this.bottom, r.bottom);
+    return null;
+  };
+  /* -- Private Window Methods -- */
 
- 		var
- 		width = right - left,
- 		height = bottom - top;
+  /* -- Frame Class -- */
+  class Frame {
+    constructor(x, y, w, h) {
+      this.left = Math.round(x);
+      this.top = Math.round(y);
+      this.width = Math.round(w);
+      this.height = Math.round(h);
+      this.right = this.left + this.width;
+      this.bottom = this.top + this.height;
+    }
+    get area() {
+      return this.width * this.height;
+    }
 
- 		return (width >= 0 && height >= 0) ? new Frame(left, top, width, height) : null;
- 	};
- 	/* -- Frame Class -- */
+    subtractFrom(rect) {
+      return new Frame(this.left - rect.left, this.top - rect.top, this.width, this.height);
+    }
 
- 	/* -- Visibility State Controller Class -- */
+    intersectionWith(rect) {
+      const
+        top = Math.max(this.top, rect.top),
+        left = Math.max(this.left, rect.left),
+        right = Math.min(this.right, rect.right),
+        bottom = Math.min(this.bottom, rect.bottom);
 
- 	var Visc = function() 
- 	{
- 		var __self = this,
- 		__elements = [],
- 		__binded = false,
- 		__callback;
+      const
+        width = right - left,
+        height = bottom - top;
 
- 		/* -- Private Helper Methods -- */
- 		var
- 		windowChanged = function()
- 		{
- 			if(!!__callback)
- 				__callback.call(__self,__self.getState(__elements));
- 		};
- 		/* -- Private Helper Methods -- */
+      return (width >= 0 && height >= 0) ? new Frame(left, top, width, height) : null;
+    }
 
- 		/* -- Privilleged Methods -- */
- 		__self.bind = function(element, callback)
- 		{
- 			if(!(_instanced++))
- 				bindWindowObserver();
+    static getOffsetRect(node) {
+      const box = node.getBoundingClientRect();
+      const top = box.top + _win.top - _client.top;
+      const left = box.left + _win.left - _client.left;
 
- 			if(typeof callback === 'function')
- 				__callback = callback;
- 			else
- 				console.error("[Visc: Invalid Callback]");
+      return new Frame(left, top, box.width, box.height);
+    }
+  }
+  /* -- Frame Class -- */
 
- 			__elements = getNodes(element);
- 			__binded = true;
- 			
- 			window.addEventListener("resize", windowChanged);
- 			window.addEventListener("scroll", windowChanged);
- 		};
+  /* -- Private Helper Methods -- */
+  const windowChanged = function () {
+    if (typeof this.callback === 'function') {
+      this.callback.call(this, this.getState(this.nodes));
+    }
+  };
+  /* -- Private Helper Methods -- */
 
- 		__self.unbind = function () 
- 		{
- 			__self.__elements = [];
+  /* -- Visibility State Controller Class -- */
+  class Visc {
+    constructor() {
+      const _self = this;
 
- 			__binded = false; 
- 			window.removeEventListener("resize", windowChanged);
- 			window.removeEventListener("scroll", windowChanged);
+      this.nodes = [];
+      this.binded = false;
+      this.callback = null;
+    }
 
- 			if(!(--_instanced)) 
- 				unbindWindowObserver(); 
- 		};
+    /* -- Public Methods -- */
+    bind(node, callback) {
+      if (!(_instanced++)) {
+        window.addEventListener('resize', updateWindowSize);
+        window.addEventListener('scroll', updateWindowSize);
+      }
 
- 		__self.getState = function(elements) 
- 		{
- 			if(elements === undefined)
- 				return null;
+      if (typeof callback !== 'function') {
+        throw ('[Visc: Invalid Callback]');
+      }
 
- 			if(!__elements.length)
- 				__elements = getNodes(elements);
+      this.callback = callback;
 
- 			if(!__binded)
- 				updateWindowSize();
+      this.nodes = getNodes(node);
+      this.binded = true;
 
- 			var _states = []; 		
+      window.addEventListener('resize', windowChanged.bind(this));
+      window.addEventListener('scroll', windowChanged.bind(this));
 
- 			for(var i = 0; i < __elements.length; i++)
- 			{
- 				var _e = __elements[i],
- 				_frame = getOffsetRect(_e),
- 				_intersection = _frame.intersectionWith(_win),
- 				_frameArea = _frame.getArea();
+      return this;
+    }
 
- 				var _state = new VisibilityState(_e);
+    unbind() {
+      this.binded = false;
+      window.removeEventListener('resize', windowChanged.bind(this));
+      window.removeEventListener('scroll', windowChanged.bind(this));
 
- 				if(_intersection && _frame.width!==0 && _frame.height!==0)
- 				{
- 					var 
- 					_intersectionArea = _intersection.getArea(),
- 					_minWidth = Math.min(_frame.width, _win.width),
- 					_minHeight = Math.min(_frame.height, _win.height);
+      if (!(--_instanced)) {
+        window.removeEventListener('resize', updateWindowSize);
+        window.removeEventListener('scroll', updateWindowSize);
+      }
 
- 					_state.frames = { 
- 						window: _intersection,
- 						viewport: _intersection.subtractFrom(_win),
- 						element: _intersection.subtractFrom(_frame)
- 					};
+      return this;
+    }
 
- 					_state.visibilityRate = {
- 						both: _intersectionArea / _frameArea,
- 						horizontal: _intersection.width / _frame.width,
- 						vertical: _intersection.height / _frame.height
- 					};
+    getState(nodes) {
+      if (!nodes) {
+        return null;
+      }
 
- 					_state.occupiedViewport = {
- 						both: _intersectionArea / _win.getArea(),
- 						horizontal: _intersection.width / _win.width,
- 						vertical: _intersection.height / _win.height
- 					};
+      if (!this.nodes.length) {
+        this.nodes = getNodes(nodes);
+      }
 
- 					_state.maxVisibility =
- 					{
- 						both: _intersectionArea / (_minWidth * _minHeight),
- 						horizontal: _intersection.width / _minWidth,
- 						vertical: _intersection.height / _minHeight	
- 					};
+      if (!_instanced) {
+        updateWindowSize();
+      }
 
- 				}
- 				_state.onScreen = isFrameOnScreen(_frame);
- 				_states.push(_state);
- 			}
- 			return _states;	
- 		};
- 		/* -- Privilleged Methods -- */
+      const states = [];
 
- 		updateWindowSize();
- 	};
+      for (let i = 0; i < this.nodes.length; i++) {
+        const node = this.nodes[i],
+          nodeFrame = Frame.getOffsetRect(node),
+          nodeIntersection = nodeFrame.intersectionWith(_win),
+          nodeFrameArea = nodeFrame.area;
 
- 	/* -- Public BooleanMode Enum -- */
- 	Visc.BooleanMode = {AND:0,OR:1};
- 	/* -- Public BooleanMode Enum -- */
+        const state = {
+          node: node,
+          onScreen: isFrameOnScreen(nodeFrame),
+          visibilityRate: {
+            both: 0,
+            horizontal: 0,
+            vertical: 0
+          },
+          occupiedViewport: {
+            both: 0,
+            horizontal: 0,
+            vertical: 0
+          },
+          maxVisibility: {
+            both: 0,
+            horizontal: 0,
+            vertical: 0
+          },
+          frames: {
+            window: new Frame(0, 0, 0, 0),
+            viewport: new Frame(0, 0, 0, 0),
+            node: new Frame(0, 0, 0, 0)
+          }
+        };
 
- 	/* -- Public Static Methods -- */
- 	Visc.getNumberOfInstances = function () { return _instanced; };
- 	Visc.getState = function (elements) { return new Visc().getState(elements); };
- 	Visc.isVisible = function (nodeOrCollection, min, booleanMode) 
- 	{ 
- 		if(!booleanMode || !min)
- 			min = 0;
+        if (nodeIntersection && nodeFrame.width !== 0 && nodeFrame.height !== 0) {
+          const nodeIntersectionArea = nodeIntersection.area;
+          const minWidth = Math.min(nodeFrame.width, _win.width);
+          const minHeight = Math.min(nodeFrame.height, _win.height);
 
- 		return getBooleanStatement(Visc.getState(getNodes(nodeOrCollection)), function(state)
- 		{
- 			var rate = state.maxVisibility.both;
- 			return (rate > 0 && rate >= min) || rate == 1;
- 		}, booleanMode);
- 	};
- 	Visc.isOnScreen = function (nodeOrCollection, booleanMode) 
- 	{ 
- 		updateWindowSize();
- 		return getBooleanStatement(getNodes(nodeOrCollection), function(element)
- 		{
- 			return isFrameOnScreen(getOffsetRect(element));
- 		}, booleanMode);
- 	};
- 	/* -- Public Static Methods -- */
+          state.frames = {
+            window: nodeIntersection,
+            viewport: nodeIntersection.subtractFrom(_win),
+            node: nodeIntersection.subtractFrom(nodeFrame)
+          };
 
- 	/* -- Visibility State Controller Class -- */
+          state.visibilityRate = {
+            both: nodeIntersectionArea / nodeFrameArea,
+            horizontal: nodeIntersection.width /  nodeFrame.width,
+            vertical: nodeIntersection.height /  nodeFrame.height
+          };
 
- 	/* -- Visibility State Class -- */
- 	function VisibilityState (element)
- 	{
- 		this.visibilityRate = {both:0,horizontal:0,vertical:0};
- 		this.occupiedViewport = {both:0,horizontal:0,vertical:0};
- 		this.maxVisibility = {both:0,horizontal:0,vertical:0};
- 		this.element = element;
- 		this.onScreen = false;
- 		this.frames = {window: new Frame(0,0,0,0), viewport: new Frame(0,0,0,0), element: new Frame(0,0,0,0)};
- 	}
- 	/* -- Visibility State Class -- */
+          state.occupiedViewport = {
+            both: nodeIntersectionArea / _win.area,
+            horizontal: nodeIntersection.width /  _win.width,
+            vertical: nodeIntersection.height /  _win.height
+          };
 
- 	/* -- jQuery / Zepto Plugin -- */
- 	if(!!$)
- 	{
- 		$.fn.visc = function (method) 
- 		{
- 			if(method==="getState")
- 				return Visc.getState(this);
- 			
- 			if (typeof method === 'function') 
- 			{
- 				var vsc = new Visc();
- 				this.data('visc', vsc);
- 				vsc.bind(this, arguments[0]);
- 				return this;
- 			}
- 			else 
- 				$.error( 'Method "' +  method + '"" does not exist on $.ViSC' );
- 		};
+          state.maxVisibility = {
+            both: nodeIntersectionArea / (minWidth * minHeight),
+            horizontal: nodeIntersection.width /  minWidth,
+            vertical: nodeIntersection.height /  minHeight
+          };
+        }
+        states.push(state);
+      }
+      return states;
+    }
 
- 		$.fn.unvisc = function () { return this.data('visc').unbind(); };
- 	}
- 	/* -- jQuery / Zepto Plugin -- */
+    /* -- Public Static Methods -- */
+    static get numberOfInstances() {
+      return _instanced;
+    }
 
- 	window.Visc = Visc;
- })(window, window.jQuery || window.Zepto || window.$);
+    static getState(nodeOrCollection) {
+      return new Visc().getState(nodeOrCollection);
+    }
+
+    static isVisible(nodeOrCollection, min = 0, booleanMode = Visc.BooleanMode.AND) {
+      return getBooleanStatement(
+        booleanMode,
+        Visc.getState(nodeOrCollection),
+        state => {
+          const rate = state.maxVisibility.both;
+          return (rate > 0 && rate >= min) || rate === 1;
+        }
+      );
+    }
+
+    static isOnScreen(nodeOrCollection, booleanMode = Visc.BooleanMode.AND) {
+        updateWindowSize();
+        return getBooleanStatement(
+          booleanMode,
+          getNodes(nodeOrCollection),
+          node => isFrameOnScreen(Frame.getOffsetRect(node))
+        );
+      }
+      /* -- Public Static Methods -- */
+  }
+
+  /* -- Public Static BooleanMode Enum -- */
+  Visc.BooleanMode = {
+    AND: 0,
+    OR: 1
+  };
+  /* -- Public BooleanMode Enum -- */
+
+  /* -- jQuery / Zepto Plugin -- */
+  if ($) {
+    $.fn.visc = function (method) {
+      if (method === 'getState')
+        return Visc.getState(this);
+
+      if (typeof method === 'function') {
+        const vsc = new Visc();
+        this.data('visc', vsc);
+        vsc.bind(this, arguments[0]);
+        return this;
+      } else {
+        $.error(`Method "${method}" does not exist on $.ViSC`);
+      }
+    };
+
+    $.fn.unvisc = function () {
+      this.data('visc').unbind();
+      return this;
+    };
+  }
+  /* -- jQuery / Zepto Plugin -- */
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Visc;
+  } else {
+    window.Visc = Visc;
+  }
+})(window, window.jQuery || window.Zepto || window.$);
